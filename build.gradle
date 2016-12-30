@@ -1,0 +1,46 @@
+group 'astro.backend.server'
+version '1.0-SNAPSHOT'
+
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src/main/generated']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java', 'src/test/generated_tests']
+        }
+    }
+}
+
+def orientDb = '2.2.14'
+
+dependencies {
+
+    compile("com.orientechnologies:orientdb-core:${orientDb}")
+    compile("com.orientechnologies:orientdb-client:${orientDb}")
+    compile("com.orientechnologies:orientdb-object:${orientDb}")
+    compile("com.orientechnologies:orientdb-object:${orientDb}")
+    compile("org.immutables:value:2.3.7")
+    compile 'org.apache.commons:commons-collections4:4.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.7'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
+    compileOnly "org.projectlombok:lombok:1.16.10"
+    compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
+    compile group: 'com.corundumstudio.socketio', name: 'netty-socketio', version: '1.7.12'
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0-M3"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.0.0-M3"
+
+}

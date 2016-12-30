@@ -1,0 +1,9 @@
+
+/.idea/
+/src/main/generated/
+/src/test/generated_tests/
+/.gradle/
+/astro/
+/gradle/
+build/
+gradle/
