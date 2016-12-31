@@ -1,5 +1,7 @@
 package astro.backend.server.engine;
 
+import com.orientechnologies.orient.core.id.ORID;
+
 public abstract class AbstractComponent implements Component {
 
     private final long id;
@@ -10,9 +12,14 @@ public abstract class AbstractComponent implements Component {
         this.id = id;
         this.entityId = entityId;
     }
+//    @Override
+//    public long getId() {
+//        return id;
+//    }
+
     @Override
-    public long getId() {
-        return id;
+    public long getComponentId() {
+        return 0;
     }
 
     @Override
@@ -21,4 +28,8 @@ public abstract class AbstractComponent implements Component {
     }
 
 
+    @Override
+    public ORID getId() {
+        return null;
+    }
 }

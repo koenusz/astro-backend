@@ -1,5 +1,8 @@
 package astro.backend.server.configuration;
 
+import astro.backend.server.datastore.OrientIdProvider;
+import astro.backend.server.engine.Engine;
+import astro.backend.server.engine.IdProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
@@ -29,6 +32,7 @@ public class OrientDBModule extends AbstractModule {
         try (OObjectDatabaseTx db = new OObjectDatabaseTx(pool.acquire())) {
             db.getEntityManager().registerEntityClasses("astro.backend.server.model.components");
         }
+        bind(IdProvider.class).to(OrientIdProvider.class);
     }
 
 //    @Override

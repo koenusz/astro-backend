@@ -1,26 +1,31 @@
 package astro.backend.server.configuration;
 
 import astro.backend.server.engine.Engine;
+import astro.backend.server.engine.IdProvider;
 import astro.backend.server.engine.Simulator;
-import astro.backend.server.model.systems.CombatSystem;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 
 public class EngineModule extends AbstractModule {
 
 
-    private final Engine engine;
+    private Engine engine;
 
     private final Simulator simulator;
 
     public EngineModule() {
-        engine = new Engine();
+
         simulator = new Simulator();
 
     }
 
     @Provides
-    public Engine provideEngine(){
+    public Engine provideEngine(IdProvider idProvider){
+       if(engine == null && idProvider == null){
+           engine = new Engine();
+       } else if (engine == null){
+           engine = new Engine(idProvider);
+       }
         return engine;
     }
 
@@ -32,6 +37,6 @@ public class EngineModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(CombatSystem.class).toProvider(new SystemProvider<>(CombatSystem.class, simulator, engine));
+      //  bind(CombatSystem.class).toProvider(new SystemProvider<>(CombatSystem.class, simulator, engine));
     }
 }

@@ -1,6 +1,5 @@
 package netty;
 
-
 import io.netty.channel.Channel;
 
 public class Player {
@@ -14,6 +13,11 @@ public class Player {
 
     public Channel getChannel() {
         return channel;
+    }
+
+
+    public boolean hasChannel(Channel channel){
+        return channel == channel;
     }
 
 

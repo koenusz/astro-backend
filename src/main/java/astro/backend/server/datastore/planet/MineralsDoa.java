@@ -15,6 +15,10 @@ public class MineralsDoa {
     private DoaHelper helper;
 
 
+    public Class getType(){
+        return Minerals.class;
+    }
+
     @Inject
     private MineralsDoa(DoaHelper helper) {
 
@@ -53,6 +57,8 @@ public class MineralsDoa {
     public void deleteMinerals(ORID mineralsId) {
         helper.delete(mineralsId);
     }
+
+
 
 
 }

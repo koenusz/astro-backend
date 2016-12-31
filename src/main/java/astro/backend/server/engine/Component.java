@@ -1,9 +1,23 @@
 package astro.backend.server.engine;
 
-public interface Component {
+import astro.backend.server.datastore.Storable;
 
-    long getId();
+public interface Component extends Storable {
+
+    long getComponentId();
 
     long getEntityId();
+
+    interface ComponentBuilder extends StorableBuilder{
+
+        Component build();
+
+        ComponentBuilder from(Storable storable);
+
+        ComponentBuilder componentId(long id);
+
+        ComponentBuilder entityId(long id);
+
+    }
 
 }

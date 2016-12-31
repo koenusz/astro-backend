@@ -4,7 +4,7 @@ import com.orientechnologies.orient.core.id.ORID;
 import com.sun.istack.internal.Nullable;
 import org.immutables.value.Value;
 
-public interface Storable {
+public interface Storable{
 
     @Nullable
     ORID getId();
@@ -14,7 +14,7 @@ public interface Storable {
         return 0;
     }
 
-    interface StorableBuilder {
+    interface StorableBuilder{
         Storable build();
 
         StorableBuilder from(Storable storable);

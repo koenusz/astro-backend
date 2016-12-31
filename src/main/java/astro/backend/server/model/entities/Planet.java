@@ -5,11 +5,9 @@ import astro.backend.server.engine.Entity;
 
 import java.util.List;
 
+public class Planet extends Entity{
 
-public class Ship extends Entity{
-
-    private Ship(long id, List<Component> components) {
+    public Planet(long id, List<Component> components) {
         super(id, components);
     }
-
 }

@@ -3,11 +3,15 @@ package astro.backend.server.engine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static astro.backend.server.engine.Component.ComponentBuilder;
+
 
 public class Engine {
 
@@ -17,59 +21,93 @@ public class Engine {
     private Map<Class<? extends Entity>, List<Entity>> entities = new HashMap<>();
     private long lastEntityId = 0;
 
+    private IdProvider idProvider;
+
+    public Engine() {
+    }
+
+    public Engine(IdProvider idProvider) {
+        this.idProvider = idProvider;
+    }
 
     private long getComponentId() {
+        if (idProvider != null) {
+            return idProvider.getComponentId();
+        }
         return ++lastComponentId;
     }
 
     private long getEntityId() {
+        if (idProvider != null) {
+            return idProvider.getEntityId();
+        }
         return ++lastEntityId;
     }
 
-    public <C extends Component> C updateComponent(ComponentBuilder<C> builder) {
-        C c = builder.create();
+    //Todo recieved pushed updates from the datastore
+    public void recieveComponentUpdate() {
+
+    }
+
+    public Component updateComponent(ComponentBuilder builder) {
+        Component c = builder.build();
         //we could consider changing this to an array and using the array index as component id if this causes performance issues.
-        List<Component> componentList = components.getOrDefault(builder.getType(), new ArrayList<>());
-        componentList.removeIf(component -> component.getId() == c.getId());
+        Class[] interfaces = c.getClass().getInterfaces();
+        if(interfaces.length != 1) {
+            throw new RuntimeException("cannot determine component type");
+        }
+
+        List<Component> componentList = components.getOrDefault(interfaces[0], new ArrayList<>());
+        componentList.removeIf(component -> component.getComponentId() == c.getComponentId());
         componentList.add(c);
-        components.put(builder.getType(), componentList);
+        components.put(interfaces[0], componentList);
         return c;
     }
 
-    public <C extends Component> C createComponent(ComponentBuilder<C> builder) {
-        builder.setId(getComponentId());
-        C c = builder.create();
-        List<Component> componentList = components.getOrDefault(builder.getType(), new ArrayList<>());
+    public Component createComponent(Component.ComponentBuilder builder) {
+        builder.componentId(getComponentId());
+        Component c = builder.build();
+        List<Component> componentList = components.getOrDefault(c.getClass(), new ArrayList<>());
         componentList.add(c);
-        components.put(builder.getType(), componentList);
+
+        Class[] interfaces = c.getClass().getInterfaces();
+        if(interfaces.length != 1) {
+        throw new RuntimeException("cannot determine component type");
+        }
+
+        components.put(interfaces[0], componentList);
         return c;
     }
 
-    public <E extends Entity> E createEntity(EntityBuilder<E> builder) {
+    public <E extends Entity> E createEntity(Class<E> type, List<Component.ComponentBuilder> builders) {
         long entityId = getEntityId();
-        builder.setId(entityId);
+        List<Component> components = builders
+                .stream().map(builder -> {
+                    builder.entityId(entityId);
+                    return this.createComponent(builder);
+                }
+        ).collect(Collectors.toList());
+        try {
+            E entity = type.getDeclaredConstructor(Long.TYPE, List.class).newInstance(entityId, components);
+            List<Entity> entityList = entities.getOrDefault(type, new ArrayList<>());
+                    entityList.add(entity);
+            entities.put(type, entityList);
+            return entity;
 
-        Component[] components = builder.getComponentBuilders().stream()
-                .map(componentBuilder -> componentBuilder.setEntityId(entityId))
-                .map(this::createComponent)
-                .toArray(Component[]::new);
-        builder.setComponents(components);
-        E e = builder.create();
-        List<Entity> entityList = entities.getOrDefault(builder.getType(), new ArrayList<>());
-        entityList.add(e);
-        entities.put(builder.getType(), entityList);
-        return e;
 
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException("failed to create entity of type " + type, e);
+        }
     }
 
     public <C extends Component> boolean removeComponent(Class<C> componentType, long id) {
         List<Component> componentList = components.getOrDefault(componentType, new ArrayList<>());
-        return componentList.removeIf(c -> c.getId() == id);
+        return componentList.removeIf(c -> c.getComponentId() == id);
     }
 
     public <C extends Component> C findComponent(Class<C> componentType, long id) {
         List<Component> componentList = components.getOrDefault(componentType, new ArrayList<>());
-        return componentType.cast(componentList.stream().filter(c -> c.getId() == id).findFirst().orElse(null));
+        return componentType.cast(componentList.stream().filter(c -> c.getComponentId() == id).findFirst().orElse(null));
     }
 
     public List<Component> findComponentsByEntityId(long entityId) {

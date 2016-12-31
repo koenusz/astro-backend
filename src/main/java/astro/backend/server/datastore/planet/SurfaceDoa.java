@@ -20,6 +20,9 @@ public class SurfaceDoa {
 
     private DoaHelper helper;
 
+    public Class getType(){
+        return Surface.class;
+    }
 
     @Inject
     private SurfaceDoa(DoaHelper helper) {
@@ -61,16 +64,10 @@ public class SurfaceDoa {
 
         ImmutableSurface.Builder builder = ImmutableSurface.builder();
 
-
-
         ODocument surfaceDoc = helper.read(SurfaceId, builder);
         if (surfaceDoc == null) {
             return null;
         }
-
-        logger.info("doc {}", surfaceDoc);
-
-        logger.info("tiles {}", surfaceDoc.field("tiles").toString()   );
 
         List<ODocument> tiledocs = surfaceDoc.field("tiles");
 

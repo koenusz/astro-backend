@@ -2,6 +2,7 @@ package astro.backend.server.engine;
 
 import lombok.Getter;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -18,7 +19,7 @@ public abstract class Entity {
 
     public <C extends Component> C getComponent(Class<C> componentType){
         return componentType.cast(components.stream()
-                .filter(component -> component.getClass().equals(componentType))
+                .filter(component -> Arrays.asList(component.getClass().getInterfaces()).contains(componentType))
                 .findFirst().orElse(null));
     }
 }

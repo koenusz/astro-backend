@@ -1,10 +1,10 @@
 package astro.backend.server.model.planet.components;
 
-import astro.backend.server.datastore.Storable;
+import astro.backend.server.engine.Component;
 import org.immutables.value.Value;
 
 @Value.Immutable
-public interface Minerals extends Storable{
+public interface Minerals extends Component{
 
 
 
@@ -17,6 +17,6 @@ public interface Minerals extends Storable{
 
     int getCopper();
 
-    interface Builder extends StorableBuilder{}
+    interface Builder extends ComponentBuilder{}
 
 }

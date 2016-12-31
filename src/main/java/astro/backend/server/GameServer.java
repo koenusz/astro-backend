@@ -19,10 +19,7 @@ import netty.WebSocketServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class GameServer {
 
@@ -86,8 +83,16 @@ public class GameServer {
         players.add(player);
     }
 
+    private Player findPlayer(Channel channel){
+       Optional<Player> result = players.stream().filter(player -> player.hasChannel(channel)).findFirst();
+       if(!result.isPresent()){
+           throw new RuntimeException("Player not found");
+       }
+        return result.get();
+    }
+
     public void dispatchAction(ActionEvent actionEvent, Channel channel){
-      Event filtered = actionFilterChain.filter(actionEvent);
+      Event filtered = actionFilterChain.filter(actionEvent, findPlayer(channel));
       dispatcher.dispatch(filtered);
     }
 
