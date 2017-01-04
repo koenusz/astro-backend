@@ -11,16 +11,16 @@ import java.util.List;
 @Getter
 public class DataRequestEvent implements Event {
 
-    private String entityTpe;
+    private String entityType;
     private List<String> components;
     private long entityId;
     private Player player;
 
     @JsonCreator
-    public DataRequestEvent(@JsonProperty("entityType") String entityTpe
+    public DataRequestEvent(@JsonProperty("entityType") String entityType
             , @JsonProperty("components") List<String> components
             , @JsonProperty("entityId") long entityId) {
-        this.entityTpe = entityTpe;
+        this.entityType = entityType;
         this.components = components;
         this.entityId = entityId;
     }

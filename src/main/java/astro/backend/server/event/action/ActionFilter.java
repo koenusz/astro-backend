@@ -22,7 +22,7 @@ public class ActionFilter<T extends Event> {
     public boolean identify(String actiontype) {
         if (actiontype.equalsIgnoreCase(type.getSimpleName())) {
             return true;
-        } else if (actiontype.equalsIgnoreCase(type.getSimpleName().replace("Action", ""))) {
+        } else if (actiontype.equalsIgnoreCase(type.getSimpleName().replace("Event", ""))) {
             return true;
         } else {
             return false;
