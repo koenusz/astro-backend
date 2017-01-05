@@ -3,6 +3,7 @@ package astro.backend.server.model;
 import astro.backend.server.configuration.EngineModule;
 import astro.backend.server.engine.Component;
 import astro.backend.server.engine.Engine;
+import astro.backend.server.engine.Entity;
 import astro.backend.server.engine.Simulator;
 import astro.backend.server.event.entities.combat.AttackEvent;
 import astro.backend.server.event.frame.Event;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 
 public class ComponentModelTest {
@@ -66,10 +68,10 @@ public class ComponentModelTest {
     @Test
     void EntityFindTest() {
         Ship ship = this.createShip();
-        Ship found = engine.findEntity(Ship.class, ship.getId());
-        Assertions.assertEquals(ship, found);
-        Ship found2 = (Ship) engine.findEntity(ship.getId());
-        Assertions.assertEquals(found2, ship);
+        Optional<Ship> found = engine.findEntity(Ship.class, ship.getId());
+        Assertions.assertEquals(ship, found.get());
+        Optional<Entity> found2 = engine.findEntity(ship.getId());
+        Assertions.assertEquals(ship, found2.get());
     }
 
     @Test

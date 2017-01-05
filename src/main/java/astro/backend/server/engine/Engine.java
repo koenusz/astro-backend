@@ -4,10 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static astro.backend.server.engine.Component.ComponentBuilder;
@@ -105,9 +102,9 @@ public class Engine {
         return componentList.removeIf(c -> c.getComponentId() == id);
     }
 
-    public <C extends Component> C findComponent(Class<C> componentType, long id) {
+    public <C extends Component> Optional<C> findComponent(Class<C> componentType, long id) {
         List<Component> componentList = components.getOrDefault(componentType, new ArrayList<>());
-        return componentType.cast(componentList.stream().filter(c -> c.getComponentId() == id).findFirst().orElse(null));
+        return componentList.stream().filter(c -> c.getComponentId() == id).findFirst().map(componentType::cast);
     }
 
     public List<Component> findComponentsByEntityId(long entityId) {
@@ -118,15 +115,15 @@ public class Engine {
                 .collect(Collectors.toList());
     }
 
-    public <E extends Entity> E findEntity(Class<E> entityType, long id) {
+    public <E extends Entity> Optional<E> findEntity(Class<E> entityType, long id) {
         List<Entity> entityList = entities.getOrDefault(entityType, new ArrayList<>());
-        return entityType.cast(entityList.stream().filter(e -> e.getId() == id).findFirst().orElse(null));
+        return entityList.stream().filter(e -> e.getId() == id).findFirst().map(entityType::cast);
     }
 
-    public Entity findEntity(long id) {
+    public Optional<Entity> findEntity(long id) {
         return entities.entrySet().stream()
                 .flatMap(list -> list.getValue().stream())
-                .filter(entity -> entity.getId() == id).findFirst().orElse(null);
+                .filter(entity -> entity.getId() == id).findFirst();
 
     }
 

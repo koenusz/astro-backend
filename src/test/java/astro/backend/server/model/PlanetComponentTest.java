@@ -4,6 +4,7 @@ import astro.backend.server.configuration.EngineModule;
 import astro.backend.server.configuration.OrientDBModule;
 import astro.backend.server.engine.Component;
 import astro.backend.server.engine.Engine;
+import astro.backend.server.engine.Entity;
 import astro.backend.server.engine.Simulator;
 import astro.backend.server.model.entities.Planet;
 import astro.backend.server.model.planet.components.*;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PlanetComponentTest {
 
@@ -63,17 +65,17 @@ public class PlanetComponentTest {
         List<Component> found = engine.findComponentsByEntityId(planet.getId());
         Assertions.assertTrue(planet.getComponents().containsAll(found));
         Surface surface = planet.getComponent(Surface.class);
-        Surface foundSurface = engine.findComponent(Surface.class, surface.getComponentId());
-        Assertions.assertEquals(surface, foundSurface);
+        Optional<Surface> foundSurface = engine.findComponent(Surface.class, surface.getComponentId());
+        Assertions.assertEquals(surface, foundSurface.get());
     }
 
     @Test
     void EntityFindTest() {
         Planet planet = this.createPlanet();
-        Planet found = engine.findEntity(Planet.class, planet.getId());
-        Assertions.assertEquals(planet, found);
-        Planet found2 = (Planet) engine.findEntity(planet.getId());
-        Assertions.assertEquals(planet, found2);
+        Optional<Planet> found = engine.findEntity(Planet.class, planet.getId());
+        Assertions.assertEquals(planet, found.get());
+        Optional<Entity> found2 = engine.findEntity(planet.getId());
+        Assertions.assertEquals(planet, found2.get());
     }
 
     @Test

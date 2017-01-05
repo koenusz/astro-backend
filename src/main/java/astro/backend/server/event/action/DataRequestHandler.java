@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DataRequestHandler implements Handler {
@@ -24,12 +25,17 @@ public class DataRequestHandler implements Handler {
         if (event instanceof DataRequestEvent) {
 
             DataRequestEvent dataRequestEvent = (DataRequestEvent) event;
-            Entity entity = engine.findEntity(dataRequestEvent.getEntityId());
-            List<Component> requestedComponents = entity.getComponents()
-                    .stream()
-                    .filter(com -> dataRequestEvent.getComponents().contains(com.getClass().getSimpleName()))
-                    .collect(Collectors.toList());
-            logger.debug("found components {}", requestedComponents);
+            Optional<Entity> entity = engine.findEntity(dataRequestEvent.getEntityId());
+            if(entity.isPresent()) {
+                List<Component> requestedComponents = entity.get().getComponents()
+                        .stream()
+                        .filter(com -> dataRequestEvent.getComponents().contains(com.getClass().getSimpleName()))
+                        .collect(Collectors.toList());
+                logger.debug("found components {}", requestedComponents);
+            } else {
+                //@TODO handle null case properly
+                throw new RuntimeException("TODO: handle not found entity properly");
+            }
         }
 
     }
