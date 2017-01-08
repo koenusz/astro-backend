@@ -39,7 +39,7 @@ public class SurfaceCRUDTest {
     @Test
     public void createTest() {
         SurfaceDoa doa = injector.getInstance(SurfaceDoa.class);
-        Surface result = doa.saveSurface(surface);
+        Surface result = doa.save(surface);
         Assertions.assertNotNull(result.getId());
         logger.info(result.toString());
     }
@@ -47,9 +47,9 @@ public class SurfaceCRUDTest {
     @Test
     public void readTest() {
         SurfaceDoa doa = injector.getInstance(SurfaceDoa.class);
-        Surface saved = doa.saveSurface(surface);
+        Surface saved = doa.save(surface);
         Assertions.assertNotNull(saved.getId());
-        Surface read = doa.readSurface(saved.getId());
+        Surface read = doa.read(saved.getId());
         Assertions.assertNotNull(read.getId());
         Assertions.assertEquals(saved.getId(), read.getId());
         Assertions.assertEquals(saved, read);
@@ -60,7 +60,7 @@ public class SurfaceCRUDTest {
     @Test
     public void updateTest() {
         SurfaceDoa doa = injector.getInstance(SurfaceDoa.class);
-        Surface saved = doa.saveSurface(surface);
+        Surface saved = doa.save(surface);
         Assertions.assertNotNull(saved.getId());
         Assertions.assertEquals(1, saved.getSize().getX());
 
@@ -73,7 +73,7 @@ public class SurfaceCRUDTest {
                         .terrainType(Tile.TerrainType.Desert).build()
                 )
                 .build();
-        Surface updated = doa.saveSurface(sur2);
+        Surface updated = doa.save(sur2);
         Assertions.assertEquals(2, updated.getTiles().size());
         Assertions.assertTrue(updated.getVersion() > saved.getVersion());
 
@@ -83,12 +83,12 @@ public class SurfaceCRUDTest {
     @Test
     public void deleteTest() {
         SurfaceDoa doa = injector.getInstance(SurfaceDoa.class);
-        Surface saved = doa.saveSurface(surface);
+        Surface saved = doa.save(surface);
         Assertions.assertNotNull(saved.getId());
 
-        doa.deleteSurface(saved.getId());
+        doa.delete(saved.getId());
 
-        Surface result = doa.readSurface(saved.getId());
+        Surface result = doa.read(saved.getId());
         Assertions.assertNull(result);
 
     }

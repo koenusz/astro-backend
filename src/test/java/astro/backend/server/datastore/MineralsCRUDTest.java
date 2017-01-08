@@ -31,7 +31,7 @@ public class MineralsCRUDTest {
     @Test
     public void createTest() {
         MineralsDoa doa = injector.getInstance(MineralsDoa.class);
-        Minerals result = doa.saveMinerals(mins);
+        Minerals result = doa.save(mins);
         Assertions.assertNotNull(result.getId());
         logger.info(result.toString());
     }
@@ -39,9 +39,9 @@ public class MineralsCRUDTest {
     @Test
     public void readTest() {
         MineralsDoa doa = injector.getInstance(MineralsDoa.class);
-        Minerals saved = doa.saveMinerals(mins);
+        Minerals saved = doa.save(mins);
         Assertions.assertNotNull(saved.getId());
-        Minerals read = doa.readMinerals(saved.getId());
+        Minerals read = doa.read(saved.getId());
         Assertions.assertNotNull(read.getId());
         Assertions.assertEquals(saved.getId(), read.getId());
         Assertions.assertEquals(saved, read);
@@ -52,11 +52,11 @@ public class MineralsCRUDTest {
     @Test
     public void updateTest() {
         MineralsDoa doa = injector.getInstance(MineralsDoa.class);
-        Minerals saved = doa.saveMinerals(mins);
+        Minerals saved = doa.save(mins);
         Assertions.assertNotNull(saved.getId());
         Assertions.assertEquals(10, saved.getCopper());
         Minerals mins2 = ImmutableMinerals.builder().from(saved).copper(15).build();
-        Minerals updated = doa.saveMinerals(mins2);
+        Minerals updated = doa.save(mins2);
         Assertions.assertEquals(15, updated.getCopper());
         Assertions.assertTrue(updated.getVersion() > saved.getVersion());
 
@@ -66,12 +66,12 @@ public class MineralsCRUDTest {
     @Test
     public void deleteTest() {
         MineralsDoa doa = injector.getInstance(MineralsDoa.class);
-        Minerals saved = doa.saveMinerals(mins);
+        Minerals saved = doa.save(mins);
         Assertions.assertNotNull(saved.getId());
 
-        doa.deleteMinerals(saved.getId());
+        doa.delete(saved.getId());
 
-        Minerals result = doa.readMinerals(saved.getId());
+        Minerals result = doa.read(saved.getId());
         Assertions.assertNull(result);
 
     }

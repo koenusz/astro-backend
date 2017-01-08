@@ -1,5 +1,7 @@
 package astro.backend.server.event.action;
 
+import astro.backend.server.datastore.DoaFinder;
+import astro.backend.server.datastore.entity.EntityDoa;
 import astro.backend.server.engine.Component;
 import astro.backend.server.engine.Engine;
 import astro.backend.server.engine.Entity;
@@ -20,6 +22,11 @@ public class DataRequestHandler implements Handler {
     @Inject
     private Engine engine;
 
+    @Inject
+    private DoaFinder doaFinder;
+    @Inject
+    private EntityDoa entityDoa;
+
     @Override
     public void onEvent(Event event) {
         if (event instanceof DataRequestEvent) {
@@ -27,16 +34,25 @@ public class DataRequestHandler implements Handler {
             DataRequestEvent dataRequestEvent = (DataRequestEvent) event;
             Optional<Entity> entity = engine.findEntity(dataRequestEvent.getEntityId());
             if(entity.isPresent()) {
-                List<Component> requestedComponents = entity.get().getComponents()
-                        .stream()
-                        .filter(com -> dataRequestEvent.getComponents().contains(com.getClass().getSimpleName()))
-                        .collect(Collectors.toList());
+                List<Component> requestedComponents = collectComponents(entity.get(), dataRequestEvent);
                 logger.debug("found components {}", requestedComponents);
-            } else {
+            }
+//            else {
+//                doaFinder.find(Entity.class)
+//            }
+
+            else {
                 //@TODO handle null case properly
                 throw new RuntimeException("TODO: handle not found entity properly");
             }
         }
 
+    }
+
+    private List<Component> collectComponents(Entity entity, DataRequestEvent dataRequestEvent){
+        return entity.getComponents()
+                .stream()
+                .filter(com -> dataRequestEvent.getComponents().contains(com.getClass().getSimpleName()))
+                .collect(Collectors.toList());
     }
 }

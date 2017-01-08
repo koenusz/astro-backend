@@ -1,12 +1,22 @@
 package astro.backend.server.configuration;
 
+import astro.backend.server.datastore.ComponentStore;
+import astro.backend.server.datastore.OrientEngineDataStore;
 import astro.backend.server.datastore.OrientIdProvider;
+import astro.backend.server.datastore.planet.MineralsDoa;
+import astro.backend.server.datastore.planet.SurfaceDoa;
+import astro.backend.server.engine.Component;
 import astro.backend.server.engine.Engine;
+import astro.backend.server.engine.EngineDataStore;
 import astro.backend.server.engine.IdProvider;
+import astro.backend.server.model.planet.components.Minerals;
+import astro.backend.server.model.planet.components.Surface;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.multibindings.MapBinder;
 import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.object.db.OObjectDatabaseTx;
+import javafx.scene.paint.Material;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,6 +43,15 @@ public class OrientDBModule extends AbstractModule {
             db.getEntityManager().registerEntityClasses("astro.backend.server.model.components");
         }
         bind(IdProvider.class).to(OrientIdProvider.class);
+
+        MapBinder<Class, ComponentStore> mapbinder
+                = MapBinder.newMapBinder(binder(), Class.class, ComponentStore.class);
+
+            mapbinder.addBinding(Surface.class).to(SurfaceDoa.class);
+            mapbinder.addBinding(Minerals.class).to(MineralsDoa.class);
+
+
+       // bind(EngineDataStore.class).to(OrientEngineDataStore.class);
     }
 
 //    @Override

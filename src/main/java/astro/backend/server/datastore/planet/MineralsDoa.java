@@ -1,49 +1,49 @@
 package astro.backend.server.datastore.planet;
 
 
-import astro.backend.server.datastore.DoaHelper;
+import astro.backend.server.datastore.AbstractDoa;
+import astro.backend.server.datastore.ComponentStore;
+import astro.backend.server.datastore.OrientEngineDataStore;
+import astro.backend.server.engine.EngineDataStore;
 import astro.backend.server.model.planet.components.ImmutableMinerals;
 import astro.backend.server.model.planet.components.Minerals;
 import com.google.inject.Inject;
+import com.orientechnologies.orient.core.db.OPartitionedDatabasePool;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 
 import java.util.function.BiFunction;
 
-public class MineralsDoa {
-
-    private DoaHelper helper;
+public class MineralsDoa extends AbstractDoa  {
 
 
-    public Class getType(){
+    public Class<Minerals> getType(){
         return Minerals.class;
     }
 
-    @Inject
-    private MineralsDoa(DoaHelper helper) {
 
-        this.helper = helper;
+    @Inject
+    public MineralsDoa(OPartitionedDatabasePool pool, EngineDataStore engineDataStore) {
+        super(pool);
+
     }
 
-    //TODO pass this method a function to convert a minerals object to a document
-    public Minerals saveMinerals(Minerals minerals) {
+    public Minerals save(Minerals minerals) {
 
         Minerals.Builder builder = ImmutableMinerals.builder();
 
         BiFunction<Minerals, ODocument, ODocument> mapper =
-                (min, doc) -> {
-                    return doc.field("copper", min.getCopper()).field("iron", min.getIron());
-                };
+                (min, doc) -> doc.field("copper", min.getCopper()).field("iron", min.getIron());
 
-        return (Minerals) helper.save(minerals, builder, mapper);
+        return (Minerals) super.save(minerals, builder, mapper);
 
     }
 
-    public Minerals readMinerals(ORID mineralsId) {
+    public Minerals read(ORID mineralsId) {
 
         ImmutableMinerals.Builder builder = ImmutableMinerals.builder();
 
-        ODocument mineralDoc = helper.read(mineralsId, builder);
+        ODocument mineralDoc = super.read(mineralsId, builder);
         if (mineralDoc == null) {
             return null;
         }
@@ -54,8 +54,8 @@ public class MineralsDoa {
                 .build();
     }
 
-    public void deleteMinerals(ORID mineralsId) {
-        helper.delete(mineralsId);
+    public void delete(ORID mineralsId) {
+        super.delete(mineralsId);
     }
 
 
