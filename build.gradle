@@ -41,6 +41,8 @@ dependencies {
     compile group: 'com.google.inject', name: 'guice', version: '4.1.0'
     compile group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '4.1.0'
     compile group: 'com.corundumstudio.socketio', name: 'netty-socketio', version: '1.7.12'
+    compile "net.onedaybeard.artemis:artemis-odb:2.1.0"
+    compile "io.javaslang:javaslang:2.0.5"
     testCompile "org.junit.jupiter:junit-jupiter-api:5.0.0-M3"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.0.0-M3"
 
