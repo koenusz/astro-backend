@@ -23,8 +23,10 @@ public class Engine {
     public Engine() {
     }
 
-    public Engine(IdProvider idProvider) {
-        this.idProvider = idProvider;
+    public void configureIdProvider(IdProvider idProvider){
+        if(idProvider == null) {
+            this.idProvider = idProvider;
+        }
     }
 
     private long getComponentId() {

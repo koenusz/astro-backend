@@ -14,6 +14,7 @@ public class Simulator implements Runnable {
     private boolean running = false;
     private List<GameObject> gameObjects = new ArrayList<>();
     private Thread thread = new Thread(this);
+    private GameObject responder;
 
     public synchronized void start() {
         running = true;
@@ -33,6 +34,10 @@ public class Simulator implements Runnable {
         gameObjects.add(gameObject);
     }
 
+    public void subscribeResponder(GameObject gameObject){
+        responder = gameObject;
+    }
+
     public void unsubscribe(GameObject gameObject){
         gameObjects.remove(gameObject);
     }
@@ -42,6 +47,7 @@ public class Simulator implements Runnable {
     public void run() {
         logger.info("running");
         long lastTime = System.nanoTime();
+        //TODO tune this
         final double ns = 1000000000.0 / 2.0 ;//2 times per second
         double delta = 0;
         while(running) {
@@ -55,8 +61,12 @@ public class Simulator implements Runnable {
                 }
                 delta--;
             }
-            //render();//displays to the screen unrestricted time
+            respond();
         }
+    }
+
+    private void respond(){
+        responder.update();
     }
 
 //    @Override

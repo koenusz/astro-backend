@@ -1,12 +1,11 @@
 package astro.backend.server.configuration;
 
-import astro.backend.server.engine.Engine;
-import astro.backend.server.engine.EngineDataStore;
-import astro.backend.server.engine.IdProvider;
-import astro.backend.server.engine.Simulator;
+import astro.backend.server.engine.*;
+import astro.backend.server.model.entities.Planet;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
+import com.google.inject.TypeLiteral;
 
 public class EngineModule extends AbstractModule {
 
@@ -22,12 +21,8 @@ public class EngineModule extends AbstractModule {
     }
 
     @Provides
-    public Engine provideEngine(IdProvider idProvider, EngineDataStore engineDataStore){
-       if(engine == null && idProvider == null){
-           engine = new Engine();
-       } else if (engine == null){
-           engine = new Engine(idProvider);
-       }
+    public Engine provideEngine(IdProvider idProvider){
+        engine.configureIdProvider(idProvider);
         return engine;
     }
 
@@ -39,6 +34,8 @@ public class EngineModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        engine = new Engine();
+      bind(new TypeLiteral<EntityMapper<Planet>>() {}).toProvider(new EntityMapperProvider(Planet.class, engine));
       //  bind(CombatSystem.class).toProvider(new SystemProvider<>(CombatSystem.class, simulator, engine));
     }
 }

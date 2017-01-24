@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import java.security.cert.CertificateException;
+import java.util.concurrent.ExecutorService;
 
 /**
  * A HTTP server which serves Web Socket requests at:
@@ -59,7 +60,7 @@ public final class WebSocketServer {
     private static final Logger logger = LogManager.getLogger();
 
 
-    public void startServer(GameServer gameServer, ObjectMapper objectMapper) {
+    public void startServer(GameServer gameServer, ObjectMapper objectMapper, ExecutorService executorService) {
         // Configure SSL.
 
 
@@ -82,7 +83,7 @@ public final class WebSocketServer {
         }
 
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new NioEventLoopGroup(0,executorService);
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)

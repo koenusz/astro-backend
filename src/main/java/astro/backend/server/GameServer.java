@@ -1,14 +1,12 @@
 package astro.backend.server;
 
-import astro.backend.server.configuration.EngineModule;
-import astro.backend.server.configuration.EventModule;
-import astro.backend.server.configuration.ExecutorModule;
-import astro.backend.server.configuration.OrientDBModule;
+import astro.backend.server.configuration.*;
 import astro.backend.server.engine.Engine;
 import astro.backend.server.engine.Simulator;
 import astro.backend.server.event.action.*;
 import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.EventDispatcher;
+import astro.backend.server.model.generators.PlanetGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -18,10 +16,13 @@ import netty.Player;
 import netty.WebSocketServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.mgt.SecurityManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
 
 public class GameServer {
 
@@ -61,6 +62,8 @@ public class GameServer {
     private ObjectMapper mapper;
     @Inject
     private ActionFilterChain actionFilterChain;
+    @Inject
+    private PlanetGenerator planetGenerator;
 
     @Inject
     public GameServer(Injector injector) {
@@ -73,14 +76,19 @@ public class GameServer {
                 , new ExecutorModule()
                 , new EngineModule()
                 , new EventModule()
+                , new AstroShiroModule()
         );
 
         gameServer = injector.getInstance(GameServer.class);
         gameServer.init();
     }
 
-      private void init() {
+    private void init() {
         registerEventHandlers();
+        planetGenerator = injector.getInstance(PlanetGenerator.class);
+        planetGenerator.seed();
+        SecurityManager securityManager = injector.getInstance(SecurityManager.class);
+        SecurityUtils.setSecurityManager(securityManager);
 //        actionQueue = injector.getInstance(ActionQueue.class);
 //        actionLog = new ActionLog();
 //        actionFilterChain = injector.getInstance(ActionFilterChain.class);
@@ -90,7 +98,7 @@ public class GameServer {
         players = new ArrayList<>();
 //        mapper = injector.getInstance(ObjectMapper.class);
         webSocketServer = new WebSocketServer();
-        webSocketServer.startServer(this, mapper);
+        webSocketServer.startServer(this, mapper, injector.getInstance(ExecutorService.class));
 
     }
 

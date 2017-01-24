@@ -8,7 +8,7 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class TypeResolver {
+public class TypeResolver2 {
 
     private BidiMap<String, Class> typeMap = new DualHashBidiMap<>();
 

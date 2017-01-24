@@ -6,6 +6,7 @@ import astro.backend.server.event.action.DataRequestHandler;
 import astro.backend.server.event.frame.EventDispatcher;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import org.apache.shiro.concurrent.SubjectAwareExecutorService;
 
 import java.util.concurrent.ExecutorService;
 

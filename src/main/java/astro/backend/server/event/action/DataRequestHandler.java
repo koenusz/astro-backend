@@ -7,7 +7,10 @@ import astro.backend.server.engine.Engine;
 import astro.backend.server.engine.Entity;
 import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.Handler;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,6 +29,8 @@ public class DataRequestHandler implements Handler {
     private DoaFinder doaFinder;
     @Inject
     private EntityDoa entityDoa;
+    @Inject
+    private ObjectMapper mapper;
 
     @Override
     public void onEvent(Event event) {
@@ -33,15 +38,15 @@ public class DataRequestHandler implements Handler {
 
             DataRequestEvent dataRequestEvent = (DataRequestEvent) event;
             Optional<Entity> entity = engine.findEntity(dataRequestEvent.getEntityId());
-            if(entity.isPresent()) {
+            if (entity.isPresent()) {
                 List<Component> requestedComponents = collectComponents(entity.get(), dataRequestEvent);
-                logger.debug("found components {}", requestedComponents);
-            }
-//            else {
-//                doaFinder.find(Entity.class)
-//            }
-
-            else {
+                logger.info("found components {}", requestedComponents);
+                try {
+                    dataRequestEvent.getPlayer().getChannel().writeAndFlush(new TextWebSocketFrame(mapper.writeValueAsString(requestedComponents)));
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
                 //@TODO handle null case properly
                 throw new RuntimeException("TODO: handle not found entity properly");
             }
@@ -49,10 +54,14 @@ public class DataRequestHandler implements Handler {
 
     }
 
-    private List<Component> collectComponents(Entity entity, DataRequestEvent dataRequestEvent){
+    private List<Component> collectComponents(Entity entity, DataRequestEvent dataRequestEvent) {
+
+        List<String> components = dataRequestEvent.getComponents().stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
         return entity.getComponents()
                 .stream()
-                .filter(com -> dataRequestEvent.getComponents().contains(com.getClass().getSimpleName()))
+                .filter(com -> components.contains(com.getClass().getInterfaces()[0].getSimpleName().toLowerCase()))
                 .collect(Collectors.toList());
     }
 }

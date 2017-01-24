@@ -17,28 +17,27 @@ package netty;
  */
 
 
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.Locale;
+import astro.backend.server.GameServer;
+import astro.backend.server.event.action.ActionEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-        import astro.backend.server.GameServer;
-        import astro.backend.server.event.action.ActionEvent;
-        import com.fasterxml.jackson.core.JsonProcessingException;
-        import com.fasterxml.jackson.databind.ObjectMapper;
-        import io.netty.buffer.ByteBufInputStream;
-        import io.netty.channel.ChannelFuture;
-        import io.netty.channel.ChannelHandlerContext;
-        import io.netty.channel.SimpleChannelInboundHandler;
-        import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-        import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-        import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-        import org.slf4j.Logger;
-        import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Echoes uppercase content of text frames.
  */
-public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
+public class WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketFrameHandler.class);
 
@@ -50,6 +49,7 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
         super();
         this.gameServer = gameServer;
         this.mapper = objectMapper;
+
     }
 
     public void writeToChannel(Player player, Object message) {
@@ -69,8 +69,8 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
         if (evt == WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
 
             Player p = new Player(ctx.channel());
-               gameServer.addPlayer(p);
-            ChannelFuture f = ctx.channel().writeAndFlush(new TextWebSocketFrame("Hello to this server"));
+            gameServer.addPlayer(p);
+            ctx.channel().writeAndFlush(new TextWebSocketFrame("Hello from this server"));
         }
     }
 
@@ -100,10 +100,10 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
     }
 
     //TODO cleanup
-    private PlanetMock createPlanetMock(){
+    private PlanetMock createPlanetMock() {
 
 
-        PlanetMock.Coordinates position =  new PlanetMock.Coordinates();
+        PlanetMock.Coordinates position = new PlanetMock.Coordinates();
         position.setX(0);
         position.setY(0);
 
@@ -113,7 +113,7 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
         List<PlanetMock.Tile> list = new ArrayList<>();
         list.add(tile);
 
-        PlanetMock.Coordinates size =  new PlanetMock.Coordinates();
+        PlanetMock.Coordinates size = new PlanetMock.Coordinates();
         size.setX(1);
         size.setY(1);
 
