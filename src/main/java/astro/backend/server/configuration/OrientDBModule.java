@@ -48,7 +48,7 @@ public class OrientDBModule extends AbstractModule {
                 = MapBinder.newMapBinder(binder(), Class.class, ComponentStore.class);
 
             mapbinder.addBinding(Surface.class).to(SurfaceDoa.class);
-            mapbinder.addBinding(Minerals.class).to(MineralsDoa.class);
+            //mapbinder.addBinding(Minerals.class).to(MineralsDoa.class);
 
 
        // bind(EngineDataStore.class).to(OrientEngineDataStore.class);

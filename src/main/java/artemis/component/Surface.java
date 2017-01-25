@@ -1,10 +1,14 @@
 package artemis.component;
 
-import java.util.List;
+import com.artemis.Component;
+import javaslang.collection.List;
 
-public class Surface {
 
-    public Size size;
+public class Surface extends Component{
+
+    public int sizeX;
+
+    public int sizeY;
 
     public List<Tile> tiles;
 }
