@@ -37,11 +37,15 @@ public class EntitySubscriberSystem extends IteratingSystem {
     }
 
     public void subscribe(Player player, Set<Integer> entities) {
-        newSubscriptions.put(player, entities);
+        newSubscriptions = newSubscriptions.put(player, entities);
+    }
+
+    public boolean isSubscribed(Player player){
+        return subscribers.values().find(set -> set.contains(player)).isDefined();
     }
 
     public void unsubscribe(Player player) {
-        unsubscribed.prepend(player);
+        unsubscribed = unsubscribed.prepend(player);
     }
 
     public Option<Set<Integer>> getPlayerUpdate(Player player){
@@ -58,9 +62,9 @@ public class EntitySubscriberSystem extends IteratingSystem {
         entities.forEach(entity -> {
             Option<Set<Player>> existing = subscribers.get(entity);
             if (existing.isDefined()) {
-                subscribers.put(entity, players.addAll(existing.get()));
+                subscribers = subscribers.put(entity, players.addAll(existing.get()));
             } else {
-                subscribers.put(entity, players);
+                subscribers = subscribers.put(entity, players);
             }
         });
     }
@@ -69,7 +73,7 @@ public class EntitySubscriberSystem extends IteratingSystem {
 
     private void unregisterSubsciptions(int entityId) {
         Set<Player> result = subscribers.get(entityId).get().filter(player -> !unsubscribed.contains(player));
-        subscribers.put(entityId, result);
+        subscribers = subscribers.put(entityId, result);
     }
 
     @Override
@@ -80,6 +84,7 @@ public class EntitySubscriberSystem extends IteratingSystem {
     @Override
     protected void end(){
         unsubscribed = List.empty();
+        // new subscribers are registered at the end of the update
         registerSubscriptions();
     }
 
@@ -92,9 +97,9 @@ public class EntitySubscriberSystem extends IteratingSystem {
             Set<Player> subscribedToThisEntity = subscribers.get(entityId).get();
                     subscribedToThisEntity.forEach(player -> {
                 if (playerUpdate.get(player).isDefined()) {
-                    playerUpdate.put(player, entities.addAll(playerUpdate.get(player).get()));
+                    playerUpdate = playerUpdate.put(player, entities.addAll(playerUpdate.get(player).get()));
                 } else {
-                    playerUpdate.put(player, entities);
+                    playerUpdate = playerUpdate.put(player, entities);
                 }
             });
         }
