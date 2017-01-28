@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class EventDispatcher implements DynamicRouter<Event> {
+public class EventDispatcher implements DynamicRouter {
 	private Map<Class<? extends Event>, Handler<? extends Event>> handlers;
 
 	public EventDispatcher() {
@@ -32,9 +32,11 @@ public class EventDispatcher implements DynamicRouter<Event> {
 		handlers.put(contentType, handler);
 	}
 
-	@Override
-	public void   dispatch(Event content) {
+	@SuppressWarnings("unchecked")
+    @Override
+	public <E extends Event> void dispatch(E content) {
 		Handler handler = handlers.get(Objects.requireNonNull(content).getClass());
-		Objects.requireNonNull(handler).onEvent(content);
+		Objects.requireNonNull(handler);
+		handler.onEvent(content);
 	}
 }

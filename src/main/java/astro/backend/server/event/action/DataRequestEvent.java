@@ -13,13 +13,13 @@ public class DataRequestEvent implements Event {
 
     private String entityType;
     private List<String> components;
-    private long entityId;
+    private int entityId;
     private Player player;
 
     @JsonCreator
     public DataRequestEvent(@JsonProperty("entityType") String entityType
             , @JsonProperty("components") List<String> components
-            , @JsonProperty("entityId") long entityId) {
+            , @JsonProperty("entityId") int entityId) {
         this.entityType = entityType;
         this.components = components;
         this.entityId = entityId;

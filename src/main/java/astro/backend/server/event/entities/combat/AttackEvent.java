@@ -2,6 +2,7 @@ package astro.backend.server.event.entities.combat;
 
 import astro.backend.server.event.frame.Event;
 import lombok.Getter;
+import netty.Player;
 
 @Getter
 public class AttackEvent implements Event {
@@ -13,5 +14,10 @@ public class AttackEvent implements Event {
     public AttackEvent(long attackerId, long targetId) {
         this.attackerId = attackerId;
         this.targetId = targetId;
+    }
+
+    @Override
+    public void assignToPlayer(Player player) {
+
     }
 }

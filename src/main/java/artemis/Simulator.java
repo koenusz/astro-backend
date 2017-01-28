@@ -1,7 +1,14 @@
 package artemis;
 
 
+import astro.backend.server.ActionQueue;
 import astro.backend.server.engine.GameObject;
+import astro.backend.server.event.frame.Event;
+import astro.backend.server.event.frame.EventDispatcher;
+import com.artemis.World;
+import com.google.inject.Inject;
+import javaslang.Tuple2;
+import javaslang.collection.Queue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,8 +20,14 @@ public class Simulator implements Runnable {
 
     private static final Logger logger = LogManager.getLogger();
     private boolean running = false;
-    private List<GameObject> gameObjects = new ArrayList<>();
     private Thread thread = new Thread(this);
+
+    @Inject
+    private ActionQueue actionQueue;
+    @Inject
+    private EventDispatcher dispatcher;
+    @Inject
+    private World world;
 
     public synchronized void start() {
         running = true;
@@ -22,54 +35,34 @@ public class Simulator implements Runnable {
     }
     public synchronized void stop() {
         running = false;
-        try {
-            thread.join();
-        } catch(InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void subscribe(GameObject gameObject){
-        gameObject.initialise();
-        gameObjects.add(gameObject);
+    public boolean isRunning(){
+        return running;
     }
-
-    public void unsubscribe(GameObject gameObject){
-        gameObjects.remove(gameObject);
-    }
-
 
     @Override
     public void run() {
         logger.info("running");
-        long lastTime = System.nanoTime();
-        final double ns = 1000000000.0 / 2.0 ;//2 times per second
-        double delta = 0;
+        float lastTime = System.nanoTime();
+        final float ns = 1000000000.0F / 2.0F ; //2 times per second
+        float delta = 0;
         while(running) {
-            long now = System.nanoTime();
-            delta = delta + ((now-lastTime) / ns);
+            float now = System.nanoTime();
+            delta = delta + ((now - lastTime) / ns);
             lastTime = now;
             while (delta >= 1)//Make sure update is only happening 2 times a second
             {
-                for (GameObject go : gameObjects) {
-                    go.update(delta);
+
+                while(actionQueue.nonEmpty()) {
+                    logger.debug("dispatch at {}", delta);
+                    dispatcher.dispatch(actionQueue.dequeue());
                 }
+                world.setDelta(delta);
+                world.process();
                 delta--;
             }
-            //render();//displays to the screen unrestricted time
         }
     }
-
-//    @Override
-//    public void listen(Action action) {
-//        if (action.getType().equals("SIM_START")){
-//            logger.info("starting");
-//            start();
-//        }
-//        if (action.getType().equals("SIM_STOP")){
-//            stop();
-//        }
-//    }
-
 
 }

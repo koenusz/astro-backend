@@ -1,14 +1,15 @@
 package astro.backend.server;
 
-import astro.backend.server.configuration.EngineModule;
+import artemis.Simulator;
 import astro.backend.server.configuration.EventModule;
 import astro.backend.server.configuration.ExecutorModule;
 import astro.backend.server.configuration.OrientDBModule;
+import astro.backend.server.configuration.WorldModule;
 import astro.backend.server.engine.Engine;
-import astro.backend.server.engine.Simulator;
 import astro.backend.server.event.action.*;
 import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.EventDispatcher;
+import com.artemis.World;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -21,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class GameServer {
@@ -56,6 +58,8 @@ public class GameServer {
     @Inject
     private EventDispatcher dispatcher;
     private WebSocketServer webSocketServer;
+    @Inject
+    private World world;
 
     @Inject
     private ObjectMapper mapper;
@@ -71,7 +75,7 @@ public class GameServer {
     public static void main(String... args) {
         Injector injector = Guice.createInjector(new OrientDBModule(LOCALURL, "admin", "admin")
                 , new ExecutorModule()
-                , new EngineModule()
+                , new WorldModule()
                 , new EventModule()
         );
 
@@ -81,21 +85,19 @@ public class GameServer {
 
       private void init() {
         registerEventHandlers();
-//        actionQueue = injector.getInstance(ActionQueue.class);
-//        actionLog = new ActionLog();
-//        actionFilterChain = injector.getInstance(ActionFilterChain.class);
-////        sim = injector.getInstance(Simulator.class);
-////        engine = injector.getInstance(Engine.class);
-//        //dispatcher = injector.getInstance(EventDispatcher.class);
         players = new ArrayList<>();
-//        mapper = injector.getInstance(ObjectMapper.class);
+
+          //TODO remove
+          world.create();
+          world.create();
+
         webSocketServer = new WebSocketServer();
         webSocketServer.startServer(this, mapper);
+
 
     }
 
     private void registerEventHandlers() {
-
         dispatcher.registerHandler(DataRequestEvent.class, injector.getInstance(DataRequestHandler.class));
     }
 
@@ -112,9 +114,15 @@ public class GameServer {
         return result.get();
     }
 
-    public void dispatchAction(ActionEvent actionEvent, Channel channel) {
-        Event filtered = actionFilterChain.filter(actionEvent, findPlayer(channel));
-        actionQueue.add(filtered);
+    public void addActionToQueue(ActionEvent actionEvent, Channel channel) {
+        Player player = findPlayer(channel);
+        Objects.nonNull(player);
+        Event filtered = actionFilterChain.filter(actionEvent, player);
+        filtered.assignToPlayer(player);
+        actionQueue.enqueue(filtered);
+        if(!simulator.isRunning()) {
+            simulator.start();
+        }
     }
 
 

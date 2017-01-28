@@ -1,10 +1,15 @@
 package astro.backend.server.event.entities.combat;
 
 import astro.backend.server.event.frame.Event;
+import netty.Player;
 
 public class ModifiedAttackMessage implements Event {
+    @Override
+    public void assignToPlayer(Player player) {
 
-   // private final Weapon weapon;
+    }
+
+    // private final Weapon weapon;
 
     //public ModifiedAttackMessage(Weapon weapon) {
 //        this.weapon = weapon;

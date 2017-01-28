@@ -1,10 +1,9 @@
 
 package astro.backend.server.event.frame;
 
+import netty.Player;
 
 public interface Event {
 
-	default Class<? extends Event> getType(){
-		return getClass();
-	}
+    void assignToPlayer(Player player);
 }

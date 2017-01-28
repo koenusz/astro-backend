@@ -19,7 +19,6 @@ package netty;
 
         import java.util.ArrayList;
         import java.util.List;
-        import java.util.Locale;
 
         import astro.backend.server.GameServer;
         import astro.backend.server.event.action.ActionEvent;
@@ -89,7 +88,8 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
             ByteBufInputStream byteBufInputStream = new ByteBufInputStream(frame.content());
             ActionEvent received = mapper.readValue(byteBufInputStream, ActionEvent.class);
 
-            gameServer.dispatchAction(received, ctx.channel());
+            gameServer.addActionToQueue(received, ctx.channel());
+
             //ctx.channel().writeAndFlush(new TextWebSocketFrame(mapper.writeValueAsString(mock)));
             //ctx.channel().writeAndFlush(new TextWebSocketFrame(request.toUpperCase(Locale.US)));
 

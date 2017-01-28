@@ -1,12 +1,12 @@
 
 package astro.backend.server.event.frame;
 
-public interface DynamicRouter<E extends Event> {
+public interface DynamicRouter {
 
 
-	public void registerHandler(Class<? extends E> contentType,
-			Handler<? extends E> handler);
+	void registerHandler(Class<? extends Event> contentType,
+			Handler<? extends Event> handler);
 
 
-	public abstract void dispatch(E content);
+	<E extends Event> void dispatch( E content);
 }

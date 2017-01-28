@@ -8,7 +8,7 @@ public class FrameRefactorTester {
 
         dispatcher.dispatch(new TestEvent());
 
-        dispatcher.registerHandler(TestEvent.class, event -> System.out.println("2 " + event.getType()));
+        dispatcher.registerHandler(TestEvent.class, event -> System.out.println("2 " + event.getClass()));
 
         dispatcher.dispatch(new TestEvent());
 

@@ -1,10 +1,12 @@
 package artemis;
 
-import artemis.component.Player;
 import com.artemis.Aspect;
 import com.artemis.systems.IteratingSystem;
 import javaslang.collection.*;
 import javaslang.control.Option;
+import netty.Player;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class keeps track of the entitydata that is requested by the frontend. This data is updated each processing tick of the engine.
@@ -12,6 +14,8 @@ import javaslang.control.Option;
  */
 
 public class EntitySubscriberSystem extends IteratingSystem {
+
+    private static final Logger logger = LogManager.getLogger();
 
     private Map<Integer, Set<Player>> subscribers;
     private Map<Player, Set<Integer>> playerUpdate;
@@ -37,6 +41,7 @@ public class EntitySubscriberSystem extends IteratingSystem {
     }
 
     public void subscribe(Player player, Set<Integer> entities) {
+        logger.debug("subscribing {} ", player);
         newSubscriptions = newSubscriptions.put(player, entities);
     }
 
@@ -45,6 +50,7 @@ public class EntitySubscriberSystem extends IteratingSystem {
     }
 
     public void unsubscribe(Player player) {
+        logger.debug("unsubscribing {} ", player);
         unsubscribed = unsubscribed.prepend(player);
     }
 
@@ -90,6 +96,7 @@ public class EntitySubscriberSystem extends IteratingSystem {
 
     @Override
     protected void process(int entityId) {
+        logger.debug("processing for {} ", entityId);
         if (subscribers.get(entityId).isDefined()) {
             unregisterSubsciptions(entityId);
             Set<Integer> entities = HashSet.of(entityId);

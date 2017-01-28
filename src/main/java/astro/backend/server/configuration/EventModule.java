@@ -1,8 +1,6 @@
 package astro.backend.server.configuration;
 
 import astro.backend.server.ActionQueue;
-import astro.backend.server.event.action.DataRequestEvent;
-import astro.backend.server.event.action.DataRequestHandler;
 import astro.backend.server.event.frame.EventDispatcher;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -17,7 +15,7 @@ public class EventModule extends AbstractModule{
     @Override
     protected void configure() {
         dispatcher = new EventDispatcher();
-
+        actionQueue = new ActionQueue();
     }
 
     @Provides
@@ -25,13 +23,8 @@ public class EventModule extends AbstractModule{
         return dispatcher;
     }
 
-
     @Provides
     public ActionQueue provideActionQueue(ExecutorService executorService){
-        if(actionQueue == null){
-            actionQueue = new ActionQueue(dispatcher, executorService);
-        }
-
         return actionQueue;
     }
 }

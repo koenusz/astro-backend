@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
+import netty.Player;
 
 @Getter
 public class ActionEvent implements Event {
@@ -24,5 +25,10 @@ public class ActionEvent implements Event {
                 "actionType='" + actionType + '\'' +
                 ", data=" + data +
                 '}';
+    }
+
+    @Override
+    public void assignToPlayer(Player player) {
+
     }
 }

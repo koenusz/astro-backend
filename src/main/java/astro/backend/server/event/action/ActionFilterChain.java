@@ -25,6 +25,6 @@ public class ActionFilterChain {
                 return filter.filter(actionEvent);
             }
         }
-        throw new RuntimeException("no filter in the chain for " + actionEvent.getType());
+        throw new RuntimeException("no filter in the chain for " + actionEvent.getClass());
     }
 }
