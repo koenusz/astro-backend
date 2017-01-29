@@ -14,9 +14,10 @@ public class Terrain {
 
     public TerrainType terrainType;
 
-    public int positionX;
-
-    public int positionY;
+//    position is deducted from the position in the list, example List[0] is position 0,0
+//    public int positionX;
+//
+//    public int positionY;
 
     //TODO move to colony
     public Specialisation specialisation = None;

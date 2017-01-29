@@ -1,20 +1,15 @@
 package artemis.component.builder;
 
-import artemis.component.Position;
-import artemis.component.Subscription;
-import artemis.component.Surface;
-import artemis.component.Terrain;
+import artemis.component.*;
 import com.artemis.Archetype;
 import com.artemis.ArchetypeBuilder;
-import com.artemis.Component;
+import com.artemis.ComponentMapper;
 import com.artemis.World;
-import com.artemis.utils.Bag;
 import com.google.inject.Inject;
+import javaslang.collection.List;
 
 public class CelesialBodyBuilder {
 
-    // 1x1 3x4 4x5 5x6 6x7 7x8
-    public enum Size {Asteroid, Tiny, Small, Medium, Large, Huge}
 
     private World world;
 
@@ -22,58 +17,111 @@ public class CelesialBodyBuilder {
     private Archetype planet;
     private Archetype asteroid;
 
+    private ComponentMapper<Position> position;
+    private ComponentMapper<Surface> surface;
+    private ComponentMapper<CelestialBody> body;
+
+    private int asteroidId = 0;
+
 
     @Inject
-    private CelesialBodyBuilder(World world){
+    private CelesialBodyBuilder(World world) {
         this.world = world;
         planet = planet();
         star = star();
         asteroid = asteroid();
+        position = world.getMapper(Position.class);
+        surface = world.getMapper(Surface.class);
 
     }
 
-    private ArchetypeBuilder celestialBobyArchetype(){
+    private ArchetypeBuilder celestialBobyArchetype() {
         return new ArchetypeBuilder()
                 .add(Position.class)
                 .add(Subscription.class);
 
     }
 
-    private Archetype star(){
+    private Archetype star() {
         return celestialBobyArchetype()
                 .build(world);
     }
 
-    public int buildStar(){
+    public int buildStar() {
         int star = world.create(this.star);
+        Position starPosition = position.get(star);
+        starPosition.x = 0;
+        starPosition.y = 0;
+        CelestialBody celestialBody = body.get(star);
+        celestialBody.name = "sol";
+        celestialBody.type = CelestialBody.Type.Star;
         return star;
 
     }
 
-    private Archetype planet(){
+    private Archetype planet() {
         return celestialBobyArchetype()
                 .add(Surface.class)
                 .build(world);
     }
 
-    public int buildPlanet(Size size, Terrain.TerrainType type){
+    public int buildPlanet(Surface.Size size, Terrain.TerrainType type, int orbiting, float radius, float angle) {
         int planet = world.create(this.planet);
+        Position planetPosition = position.get(planet);
+        planetPosition.orbiting = orbiting;
+        planetPosition.radius = radius;
+        planetPosition.angle = angle;
+
+        Surface planetSurface = surface.get(planet);
+        planetSurface.size = size;
+        planetSurface.tiles = List.fill(size.x() * size.y(), () -> {
+            Terrain terrain = new Terrain();
+            terrain.terrainType = type;
+            return terrain;
+        });
+
+
+        CelestialBody celestialBody = body.get(planet);
+        celestialBody.name = "planet " + type;
+
+        if (body.get(orbiting).type == CelestialBody.Type.Star) {
+            celestialBody.type = CelestialBody.Type.Planet;
+        } else {
+            celestialBody.type = CelestialBody.Type.Moon;
+        }
+
         return planet;
     }
 
-    private Archetype asteroid(){
+
+    private Archetype asteroid() {
         return celestialBobyArchetype()
                 .add(Surface.class)
                 .build(world);
     }
 
-    public int buildAsteroid(){
+    public int buildAsteroid(int orbiting, float radius, float angle) {
         int asteroid = world.create(this.asteroid);
+        Position asteroidPosition = position.get(asteroid);
+        asteroidPosition.orbiting = orbiting;
+        asteroidPosition.radius = radius;
+        asteroidPosition.angle = angle;
+
+        Surface asteroidSurface = surface.get(asteroid);
+        asteroidSurface.size = Surface.Size.Asteroid;
+        asteroidSurface.tiles = List.fill(1, () -> {
+            Terrain terrain = new Terrain();
+            terrain.terrainType = Terrain.TerrainType.Barren;
+            return terrain;
+        });
+
+        CelestialBody celestialBody = body.get(asteroid);
+        celestialBody.name = "asteroid " + asteroidId++;
+        celestialBody.type = CelestialBody.Type.Asteroid;
+
+
         return asteroid;
     }
 
-    private Bag<Component> getComponents(int entityId){
-        return world.getComponentManager().getComponentsFor(entityId, new Bag<>());
-    }
 
 }
