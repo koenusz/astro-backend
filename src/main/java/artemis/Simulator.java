@@ -2,25 +2,20 @@ package artemis;
 
 
 import astro.backend.server.ActionQueue;
-import astro.backend.server.engine.GameObject;
-import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.EventDispatcher;
 import com.artemis.World;
 import com.google.inject.Inject;
-import javaslang.Tuple2;
-import javaslang.collection.Queue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 
 public class Simulator implements Runnable {
 
     private static final Logger logger = LogManager.getLogger();
     private boolean running = false;
-    private Thread thread = new Thread(this);
+
 
     @Inject
     private ActionQueue actionQueue;
@@ -28,10 +23,12 @@ public class Simulator implements Runnable {
     private EventDispatcher dispatcher;
     @Inject
     private World world;
+    @Inject
+    private ExecutorService executorService;
 
     public synchronized void start() {
         running = true;
-        thread.start();
+        executorService.execute(this::run);
     }
     public synchronized void stop() {
         running = false;

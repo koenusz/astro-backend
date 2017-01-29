@@ -1,6 +1,7 @@
 package astro.backend.server.event.action;
 
-import astro.backend.server.engine.Simulator;
+
+import artemis.Simulator;
 import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.Handler;
 import com.google.inject.Inject;

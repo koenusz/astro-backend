@@ -1,16 +1,16 @@
 package artemis;
 
-import artemis.component.Player;
+
 import artemis.component.Surface;
-import artemis.component.Tile;
+import artemis.component.Terrain;
 import com.artemis.*;
 import javaslang.collection.HashSet;
 import javaslang.collection.List;
 import javaslang.collection.Set;
 import javaslang.control.Option;
+import netty.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -78,39 +78,39 @@ public class EntitySubscriberSystemTest {
                 ).build();
 
         world = new World(config);
-        player = new Player();
+        player = new Player(null);
         int planet = world.create();
 
         ComponentMapper<Surface> surfaceComponentMapper = world.getMapper(Surface.class);
         Surface s = surfaceComponentMapper.create(planet);
         s.sizeX = 2;
         s.sizeY = 2;
-        Tile tile1 = new Tile();
-        tile1.specialisation = Tile.Specialisation.None;
-        tile1.terrainType = Tile.TerrainType.Arctic;
-        tile1.positionX = 0;
-        tile1.positionY = 0;
+        Terrain terrain1 = new Terrain();
+        terrain1.specialisation = Terrain.Specialisation.None;
+        terrain1.terrainType = Terrain.TerrainType.Arctic;
+        terrain1.positionX = 0;
+        terrain1.positionY = 0;
 
-        Tile tile2 = new Tile();
-        tile2.specialisation = Tile.Specialisation.None;
-        tile2.terrainType = Tile.TerrainType.Arctic;
-        tile2.positionX = 0;
-        tile2.positionY = 0;
+        Terrain terrain2 = new Terrain();
+        terrain2.specialisation = Terrain.Specialisation.None;
+        terrain2.terrainType = Terrain.TerrainType.Arctic;
+        terrain2.positionX = 0;
+        terrain2.positionY = 0;
 
-        Tile tile3 = new Tile();
-        tile3.specialisation = Tile.Specialisation.None;
-        tile3.terrainType = Tile.TerrainType.Arctic;
-        tile3.positionX = 0;
-        tile3.positionY = 0;
+        Terrain terrain3 = new Terrain();
+        terrain3.specialisation = Terrain.Specialisation.None;
+        terrain3.terrainType = Terrain.TerrainType.Arctic;
+        terrain3.positionX = 0;
+        terrain3.positionY = 0;
 
-        Tile tile4 = new Tile();
-        tile4.specialisation = Tile.Specialisation.None;
-        tile4.terrainType = Tile.TerrainType.Arctic;
-        tile4.positionX = 0;
-        tile4.positionY = 0;
+        Terrain terrain4 = new Terrain();
+        terrain4.specialisation = Terrain.Specialisation.None;
+        terrain4.terrainType = Terrain.TerrainType.Arctic;
+        terrain4.positionX = 0;
+        terrain4.positionY = 0;
 
 
-        s.tiles = List.of(tile1, tile2, tile3, tile4);
+        s.tiles = List.of(terrain1, terrain2, terrain3, terrain4);
 
         entitySubscriberSystem = world.getSystem(EntitySubscriberSystem.class);
     }

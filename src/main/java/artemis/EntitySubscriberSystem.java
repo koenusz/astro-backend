@@ -1,6 +1,8 @@
 package artemis;
 
+import artemis.component.Subscription;
 import com.artemis.Aspect;
+import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
 import javaslang.collection.*;
 import javaslang.control.Option;
@@ -22,6 +24,8 @@ public class EntitySubscriberSystem extends IteratingSystem {
 
     private Map<Player, Set<Integer>> newSubscriptions;
     private List<Player> unsubscribed;
+
+    private ComponentMapper<Subscription> subscriptionComponentMapper;
 
     /**
      * Creates a new EntityProcessingSystem.
@@ -97,7 +101,8 @@ public class EntitySubscriberSystem extends IteratingSystem {
     @Override
     protected void process(int entityId) {
         logger.debug("processing for {} ", entityId);
-        if (subscribers.get(entityId).isDefined()) {
+        Subscription subscription = subscriptionComponentMapper.get(entityId);
+        if (subscribers.get(entityId).isDefined() &&  subscription.updateFrontend) {
             unregisterSubsciptions(entityId);
             Set<Integer> entities = HashSet.of(entityId);
 
@@ -110,6 +115,6 @@ public class EntitySubscriberSystem extends IteratingSystem {
                 }
             });
         }
-
+        subscription.updateFrontend = false;
     }
 }

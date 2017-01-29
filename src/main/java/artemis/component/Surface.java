@@ -10,5 +10,5 @@ public class Surface extends Component{
 
     public int sizeY;
 
-    public List<Tile> tiles;
+    public List<Terrain> tiles;
 }

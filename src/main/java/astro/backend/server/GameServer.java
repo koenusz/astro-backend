@@ -5,7 +5,6 @@ import astro.backend.server.configuration.EventModule;
 import astro.backend.server.configuration.ExecutorModule;
 import astro.backend.server.configuration.OrientDBModule;
 import astro.backend.server.configuration.WorldModule;
-import astro.backend.server.engine.Engine;
 import astro.backend.server.event.action.*;
 import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.EventDispatcher;
@@ -53,8 +52,6 @@ public class GameServer {
     private ActionLog actionLog;
     @Inject
     private Simulator simulator;
-    @Inject
-    private Engine engine;
     @Inject
     private EventDispatcher dispatcher;
     private WebSocketServer webSocketServer;

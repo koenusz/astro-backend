@@ -2,7 +2,7 @@ package artemis;
 
 import artemis.component.Position;
 import artemis.component.Surface;
-import artemis.component.Tile;
+import artemis.component.Terrain;
 import com.artemis.Aspect;
 import com.artemis.ComponentMapper;
 import com.artemis.systems.IteratingSystem;
@@ -30,7 +30,7 @@ public class TileSpecialisationSystem extends IteratingSystem {
         Position p = new Position();
         p.x = 0;
         p.y = 0;
-        Tile.Specialisation spec = Tile.Specialisation.Research;
+        Terrain.Specialisation spec = Terrain.Specialisation.Research;
 
         Surface surface = surfaceComponentMapper.get(entityId);
         surface.tiles.filter(tile -> tile.positionX == p.x && tile.positionY == p.y ).get().specialisation = spec;

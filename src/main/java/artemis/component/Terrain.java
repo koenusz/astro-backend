@@ -1,8 +1,8 @@
 package artemis.component;
 
-import static artemis.component.Tile.Specialisation.None;
+import static artemis.component.Terrain.Specialisation.None;
 
-public class Tile {
+public class Terrain {
 
     public enum TerrainType {
         Arctic, Barren, Desert, Forest, Jungle, Mountains, Water
@@ -18,6 +18,7 @@ public class Tile {
 
     public int positionY;
 
+    //TODO move to colony
     public Specialisation specialisation = None;
 
 }

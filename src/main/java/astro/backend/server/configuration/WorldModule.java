@@ -2,6 +2,7 @@ package astro.backend.server.configuration;
 
 import artemis.EntitySubscriberSystem;
 import artemis.TileSpecialisationSystem;
+import artemis.component.Subscription;
 import artemis.component.Surface;
 import com.artemis.Aspect;
 import com.artemis.World;
@@ -22,7 +23,7 @@ public class WorldModule extends AbstractModule {
                 // .dependsOn(MyPlugin.class)
                 .with(
                         new TileSpecialisationSystem(Aspect.all(Surface.class)),
-                        new EntitySubscriberSystem(Aspect.all())
+                        new EntitySubscriberSystem(Aspect.all(Subscription.class ))
                 ).build();
 
         world = new World(config);
