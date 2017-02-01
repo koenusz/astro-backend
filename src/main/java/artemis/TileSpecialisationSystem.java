@@ -33,8 +33,15 @@ public class TileSpecialisationSystem extends IteratingSystem {
         Terrain.Specialisation spec = Terrain.Specialisation.Research;
 
         Surface surface = surfaceComponentMapper.get(entityId);
-        surface.tiles.filter(tile -> tile.positionX == p.x && tile.positionY == p.y ).get().specialisation = spec;
 
+
+        for(Terrain terrain : surface.terrainTiles){
+            int index = surface.terrainTiles.indexOf(terrain);
+            if((index % surface.size.x() == p.x) && (index / surface.size.x() == p.y)){
+                terrain.specialisation = spec;
+            }
+
+        }
         logger.info("processing entity {} component {} ", entityId, surface);
 
     }

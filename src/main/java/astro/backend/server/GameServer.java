@@ -1,6 +1,11 @@
 package astro.backend.server;
 
+import artemis.EntitySubscriberSystem;
 import artemis.Simulator;
+import artemis.component.Subscription;
+import artemis.component.Surface;
+import artemis.component.Terrain;
+import artemis.component.builder.CelesialBodyBuilder;
 import astro.backend.server.configuration.EventModule;
 import astro.backend.server.configuration.ExecutorModule;
 import astro.backend.server.configuration.OrientDBModule;
@@ -8,7 +13,9 @@ import astro.backend.server.configuration.WorldModule;
 import astro.backend.server.event.action.*;
 import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.EventDispatcher;
+import com.artemis.Entity;
 import com.artemis.World;
+import com.artemis.utils.Bag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -62,6 +69,8 @@ public class GameServer {
     private ObjectMapper mapper;
     @Inject
     private ActionFilterChain actionFilterChain;
+    @Inject
+    private CelesialBodyBuilder celesialBodyBuilder;
 
     @Inject
     public GameServer(Injector injector) {
@@ -84,9 +93,23 @@ public class GameServer {
         registerEventHandlers();
         players = new ArrayList<>();
 
-          //TODO remove
-          world.create();
-          world.create();
+
+        int star = celesialBodyBuilder.buildStar();
+        int planet1 = celesialBodyBuilder.buildPlanet(Surface.Size.Small, Terrain.TerrainType.Forest, star, 10, 0);
+        celesialBodyBuilder.buildPlanet(Surface.Size.Tiny, Terrain.TerrainType.Forest, planet1, 1, 0);
+        celesialBodyBuilder.buildPlanet(Surface.Size.Large, Terrain.TerrainType.Jungle, star, 15, 0);
+
+          for (int i = 0; i < 10; i++) {
+              celesialBodyBuilder.buildAsteroid( star, 20 + i, i);
+          }
+
+          logger.debug(world.getEntity(planet1).getComponents(new Bag<>()));
+
+        int ent = world.create();
+        Entity entity = world.getEntity(ent);
+        entity.edit().add(new Subscription());
+        EntitySubscriberSystem system = world.getSystem(EntitySubscriberSystem.class);
+        logger.debug(system.getEntityIds());
 
         webSocketServer = new WebSocketServer();
         webSocketServer.startServer(this, mapper);

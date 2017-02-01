@@ -7,9 +7,12 @@ import com.artemis.ComponentMapper;
 import com.artemis.World;
 import com.google.inject.Inject;
 import javaslang.collection.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CelesialBodyBuilder {
 
+    private static final Logger logger = LogManager.getLogger();
 
     private World world;
 
@@ -22,6 +25,7 @@ public class CelesialBodyBuilder {
     private ComponentMapper<CelestialBody> body;
 
     private int asteroidId = 0;
+    private int planetId = 0;
 
 
     @Inject
@@ -32,11 +36,13 @@ public class CelesialBodyBuilder {
         asteroid = asteroid();
         position = world.getMapper(Position.class);
         surface = world.getMapper(Surface.class);
+        body = world.getMapper(CelestialBody.class);
 
     }
 
     private ArchetypeBuilder celestialBobyArchetype() {
         return new ArchetypeBuilder()
+                .add(CelestialBody.class)
                 .add(Position.class)
                 .add(Subscription.class);
 
@@ -48,6 +54,7 @@ public class CelesialBodyBuilder {
     }
 
     public int buildStar() {
+
         int star = world.create(this.star);
         Position starPosition = position.get(star);
         starPosition.x = 0;
@@ -74,7 +81,7 @@ public class CelesialBodyBuilder {
 
         Surface planetSurface = surface.get(planet);
         planetSurface.size = size;
-        planetSurface.tiles = List.fill(size.x() * size.y(), () -> {
+        planetSurface.terrainTiles = List.fill(size.x() * size.y(), () -> {
             Terrain terrain = new Terrain();
             terrain.terrainType = type;
             return terrain;
@@ -82,7 +89,7 @@ public class CelesialBodyBuilder {
 
 
         CelestialBody celestialBody = body.get(planet);
-        celestialBody.name = "planet " + type;
+        celestialBody.name = "planet_" + type + "_" + planetId++;
 
         if (body.get(orbiting).type == CelestialBody.Type.Star) {
             celestialBody.type = CelestialBody.Type.Planet;
@@ -109,7 +116,7 @@ public class CelesialBodyBuilder {
 
         Surface asteroidSurface = surface.get(asteroid);
         asteroidSurface.size = Surface.Size.Asteroid;
-        asteroidSurface.tiles = List.fill(1, () -> {
+        asteroidSurface.terrainTiles = List.fill(1, () -> {
             Terrain terrain = new Terrain();
             terrain.terrainType = Terrain.TerrainType.Barren;
             return terrain;

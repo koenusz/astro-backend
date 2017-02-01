@@ -10,6 +10,8 @@ import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import net.namekdev.entity_tracker.EntityTracker;
+import net.namekdev.entity_tracker.ui.EntityTrackerMainWindow;
 
 public class WorldModule extends AbstractModule {
 
@@ -21,12 +23,12 @@ public class WorldModule extends AbstractModule {
 
         WorldConfiguration config = new WorldConfigurationBuilder()
                 // .dependsOn(MyPlugin.class)
-                .with(
+                .with(  new EntityTracker(new EntityTrackerMainWindow()),
                         new TileSpecialisationSystem(Aspect.all(Surface.class)),
                         new EntitySubscriberSystem(Aspect.all(Subscription.class ))
                 ).build();
-
         world = new World(config);
+
     }
 
     @Provides

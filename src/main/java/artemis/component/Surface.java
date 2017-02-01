@@ -33,5 +33,5 @@ public class Surface extends Component{
 
     public Size size;
 
-    public List<Terrain> tiles;
+    public List<Terrain> terrainTiles;
 }

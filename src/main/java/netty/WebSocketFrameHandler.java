@@ -17,6 +17,7 @@ package netty;
  */
 
 
+        import java.io.InputStream;
         import java.util.ArrayList;
         import java.util.List;
 
@@ -85,7 +86,7 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
             String request = ((TextWebSocketFrame) frame).text();
             logger.info("{} received {}", ctx.channel(), request);
 
-            ByteBufInputStream byteBufInputStream = new ByteBufInputStream(frame.content());
+            InputStream byteBufInputStream = new ByteBufInputStream(frame.content());
             ActionEvent received = mapper.readValue(byteBufInputStream, ActionEvent.class);
 
             gameServer.addActionToQueue(received, ctx.channel());
