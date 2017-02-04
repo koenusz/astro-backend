@@ -9,6 +9,11 @@ public class ModifiedAttackMessage implements Event {
 
     }
 
+    @Override
+    public Player getPlayer() {
+        return null;
+    }
+
     // private final Weapon weapon;
 
     //public ModifiedAttackMessage(Weapon weapon) {

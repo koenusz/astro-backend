@@ -17,11 +17,14 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.utils.Bag;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.guice.ObjectMapperModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import io.netty.channel.Channel;
+import javaslang.jackson.datatype.JavaslangModule;
 import netty.Player;
+import netty.ResponderImpl;
 import netty.WebSocketServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,17 +38,6 @@ public class GameServer {
 
 
     private static final Logger logger = LogManager.getLogger();
-
-    //  @TODO start the websocket from here.
-//    public static void main(String[] args) {
-//
-//        final ResourceBundle configurationBundle = ResourceBundle.getBundle("configuration");
-//        int port = Integer.valueOf(configurationBundle.getString("port"));
-////        WebSocketServer pWebSocketServer = new WebSocketServer();
-////        pWebSocketServer.start(port);
-////        LOG.info("server started");
-//}
-
 
     private final static String LOCALURL = "plocal:astro";
     private static GameServer gameServer;
@@ -64,6 +56,8 @@ public class GameServer {
     private WebSocketServer webSocketServer;
     @Inject
     private World world;
+    @Inject
+    private ResponderImpl responderImpl;
 
     @Inject
     private ObjectMapper mapper;
@@ -78,13 +72,17 @@ public class GameServer {
         gameServer = this;
     }
 
-    public static void main(String... args) {
-        Injector injector = Guice.createInjector(new OrientDBModule(LOCALURL, "admin", "admin")
+    public static Injector initInjector(){
+        return Guice.createInjector(new OrientDBModule(LOCALURL, "admin", "admin")
                 , new ExecutorModule()
                 , new WorldModule()
                 , new EventModule()
+                , new ObjectMapperModule().registerModule(new JavaslangModule())
         );
+    }
 
+    public static void main(String... args) {
+        Injector injector = initInjector();
         gameServer = injector.getInstance(GameServer.class);
         gameServer.init();
     }
@@ -96,20 +94,15 @@ public class GameServer {
 
         int star = celesialBodyBuilder.buildStar();
         int planet1 = celesialBodyBuilder.buildPlanet(Surface.Size.Small, Terrain.TerrainType.Forest, star, 10, 0);
-        celesialBodyBuilder.buildPlanet(Surface.Size.Tiny, Terrain.TerrainType.Forest, planet1, 1, 0);
-        celesialBodyBuilder.buildPlanet(Surface.Size.Large, Terrain.TerrainType.Jungle, star, 15, 0);
+//        celesialBodyBuilder.buildPlanet(Surface.Size.Tiny, Terrain.TerrainType.Forest, planet1, 1, 0);
+//        celesialBodyBuilder.buildPlanet(Surface.Size.Large, Terrain.TerrainType.Jungle, star, 15, 0);
+//
+//          for (int i = 0; i < 10; i++) {
+//              celesialBodyBuilder.buildAsteroid( star, 20 + i, i);
+//          }
 
-          for (int i = 0; i < 10; i++) {
-              celesialBodyBuilder.buildAsteroid( star, 20 + i, i);
-          }
-
-          logger.debug(world.getEntity(planet1).getComponents(new Bag<>()));
-
-        int ent = world.create();
-        Entity entity = world.getEntity(ent);
-        entity.edit().add(new Subscription());
         EntitySubscriberSystem system = world.getSystem(EntitySubscriberSystem.class);
-        logger.debug(system.getEntityIds());
+        system.registerResponder(responderImpl);
 
         webSocketServer = new WebSocketServer();
         webSocketServer.startServer(this, mapper);
@@ -126,6 +119,12 @@ public class GameServer {
         players.add(player);
     }
 
+    public void removePlayer(Player player){
+        players.remove(player);
+        EntitySubscriberSystem entitySubscriberSystem = world.getSystem(EntitySubscriberSystem.class);
+        entitySubscriberSystem.unsubscribe(player);
+    }
+
     private Player findPlayer(Channel channel) {
         Optional<Player> result = players.stream().filter(player -> player.hasChannel(channel)).findFirst();
         if (!result.isPresent()) {
@@ -139,6 +138,7 @@ public class GameServer {
         Objects.nonNull(player);
         Event filtered = actionFilterChain.filter(actionEvent, player);
         filtered.assignToPlayer(player);
+
         actionQueue.enqueue(filtered);
         if(!simulator.isRunning()) {
             simulator.start();

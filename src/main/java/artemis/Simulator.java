@@ -28,37 +28,44 @@ public class Simulator implements Runnable {
 
     public synchronized void start() {
         running = true;
+
         executorService.execute(this::run);
     }
+
     public synchronized void stop() {
         running = false;
     }
 
-    public boolean isRunning(){
+    public boolean isRunning() {
         return running;
     }
 
     @Override
     public void run() {
-        logger.info("running");
-        float lastTime = System.nanoTime();
-        final float ns = 1000000000.0F / 2.0F ; //2 times per second
-        float delta = 0;
-        while(running) {
-            float now = System.nanoTime();
-            delta = delta + ((now - lastTime) / ns);
-            lastTime = now;
-            while (delta >= 1)//Make sure update is only happening 2 times a second
-            {
+        try {
+            logger.info("running");
+            float lastTime = System.nanoTime();
+            final float ns = 1000000000.0F / 2.0F; //2 times per second
+            float delta = 0;
+            while (running) {
 
-                while(actionQueue.nonEmpty()) {
-                    logger.debug("dispatch at {}", delta);
-                    dispatcher.dispatch(actionQueue.dequeue());
+                float now = System.nanoTime();
+                delta = delta + ((now - lastTime) / ns);
+                lastTime = now;
+                while (delta >= 1)//Make sure update is only happening 2 times a second
+                {
+                    while (actionQueue.nonEmpty()) {
+                        logger.debug("dispatch at {}", delta);
+                        dispatcher.dispatch(actionQueue.dequeue());
+                    }
+                    world.setDelta(delta);
+                    world.process();
+                    delta--;
                 }
-                world.setDelta(delta);
-                world.process();
-                delta--;
             }
+        } catch (Throwable e) {
+            logger.error(e);
+            executorService.execute(this::run);
         }
     }
 

@@ -31,4 +31,9 @@ public class ActionEvent implements Event {
     public void assignToPlayer(Player player) {
 
     }
+
+    @Override
+    public Player getPlayer() {
+        return null;
+    }
 }

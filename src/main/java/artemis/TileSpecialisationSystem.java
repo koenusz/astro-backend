@@ -42,7 +42,6 @@ public class TileSpecialisationSystem extends IteratingSystem {
             }
 
         }
-        logger.info("processing entity {} component {} ", entityId, surface);
 
     }
 }

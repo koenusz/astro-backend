@@ -18,6 +18,7 @@ package netty;
 
 
         import java.io.InputStream;
+        import java.io.OutputStream;
         import java.util.ArrayList;
         import java.util.List;
 
@@ -25,10 +26,15 @@ package netty;
         import astro.backend.server.event.action.ActionEvent;
         import com.fasterxml.jackson.core.JsonProcessingException;
         import com.fasterxml.jackson.databind.ObjectMapper;
+        import io.netty.buffer.ByteBuf;
         import io.netty.buffer.ByteBufInputStream;
+        import io.netty.buffer.ByteBufOutputStream;
+        import io.netty.buffer.Unpooled;
         import io.netty.channel.ChannelFuture;
+        import io.netty.channel.ChannelFutureListener;
         import io.netty.channel.ChannelHandlerContext;
         import io.netty.channel.SimpleChannelInboundHandler;
+        import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
         import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
         import io.netty.handler.codec.http.websocketx.WebSocketFrame;
         import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
@@ -50,27 +56,33 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
         super();
         this.gameServer = gameServer;
         this.mapper = objectMapper;
+
     }
 
     public void writeToChannel(Player player, Object message) {
 
-        try {
-            player.getChannel().writeAndFlush(new TextWebSocketFrame(mapper.writeValueAsString(message)));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            player.getChannel().writeAndFlush(new TextWebSocketFrame(mapper.writeValueAsString(message)));
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
 
     }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         super.userEventTriggered(ctx, evt);
+        logger.debug("userEvent {} ", evt);
+        if (evt instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
 
-        if (evt == WebSocketServerProtocolHandler.ServerHandshakeStateEvent.HANDSHAKE_COMPLETE) {
-
-            Player p = new Player(ctx.channel());
-               gameServer.addPlayer(p);
+            Player p = new Player(ctx.channel(), mapper);
+            gameServer.addPlayer(p);
             ChannelFuture f = ctx.channel().writeAndFlush(new TextWebSocketFrame("Hello to this server"));
+            ChannelFuture closeFuture = ctx.channel().closeFuture();
+            closeFuture.addListener((ChannelFutureListener) future -> {
+                gameServer.removePlayer(p);
+                p.delete();
+            });
         }
     }
 

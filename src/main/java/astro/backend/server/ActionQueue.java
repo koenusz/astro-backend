@@ -1,12 +1,8 @@
 package astro.backend.server;
 
 import astro.backend.server.event.frame.Event;
-import astro.backend.server.event.frame.EventDispatcher;
-import com.google.inject.Inject;
 import javaslang.Tuple2;
 import javaslang.collection.Queue;
-
-import java.util.concurrent.ExecutorService;
 
 public class ActionQueue {
 

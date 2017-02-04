@@ -1,6 +1,7 @@
 package artemis;
 
 
+import artemis.component.Subscription;
 import artemis.component.Surface;
 import artemis.component.Terrain;
 import com.artemis.*;
@@ -78,7 +79,7 @@ public class EntitySubscriberSystemTest {
                 ).build();
 
         world = new World(config);
-        player = new Player(null);
+        player = new Player(null, null);
         int planet = world.create();
 
         ComponentMapper<Surface> surfaceComponentMapper = world.getMapper(Surface.class);
@@ -105,9 +106,12 @@ public class EntitySubscriberSystemTest {
 
 
 
-        // s.tiles = List.of(terrain1, terrain2, terrain3, terrain4);
+         s.terrainTiles = List.of(terrain1, terrain2, terrain3, terrain4);
 
-        entitySubscriberSystem = world.getSystem(EntitySubscriberSystem.class);
+
+        ComponentMapper<Subscription> subscriptionComponentMapper = world.getMapper(Subscription.class);
+        Subscription subscription = subscriptionComponentMapper.create(planet);
+        subscription.updateFrontend = true;
     }
 
 

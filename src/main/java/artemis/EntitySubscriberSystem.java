@@ -7,6 +7,7 @@ import com.artemis.systems.IteratingSystem;
 import javaslang.collection.*;
 import javaslang.control.Option;
 import netty.Player;
+import netty.Responder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,6 +25,7 @@ public class EntitySubscriberSystem extends IteratingSystem {
 
     private Map<Player, Set<Integer>> newSubscriptions;
     private List<Player> unsubscribed;
+    private List<Responder> responders;
 
     private ComponentMapper<Subscription> subscriptionComponentMapper;
 
@@ -37,11 +39,17 @@ public class EntitySubscriberSystem extends IteratingSystem {
         this.init();
     }
 
+
     private void init() {
         subscribers = HashMap.empty();
         unsubscribed = List.empty();
         newSubscriptions = HashMap.empty();
         playerUpdate = HashMap.empty();
+        responders = List.empty();
+    }
+
+    public void registerResponder(Responder responder){
+        responders = responders.append(responder);
     }
 
     public void subscribe(Player player, Set<Integer> entities) {
@@ -51,11 +59,6 @@ public class EntitySubscriberSystem extends IteratingSystem {
 
     public boolean isSubscribed(Player player){
         return subscribers.values().find(set -> set.contains(player)).isDefined();
-    }
-
-    public void unsubscribe(Player player) {
-        logger.debug("unsubscribing {} ", player);
-        unsubscribed = unsubscribed.prepend(player);
     }
 
     public Option<Set<Integer>> getPlayerUpdate(Player player){
@@ -68,6 +71,7 @@ public class EntitySubscriberSystem extends IteratingSystem {
     }
 
     private void registerSubscription(Player player, Set<Integer> entities) {
+       logger.debug("registering {}, entities {}", player, entities);
         Set<Player> players = HashSet.of(player);
         entities.forEach(entity -> {
             Option<Set<Player>> existing = subscribers.get(entity);
@@ -79,9 +83,13 @@ public class EntitySubscriberSystem extends IteratingSystem {
         });
     }
 
-
+    public void unsubscribe(Player player) {
+        logger.debug("unsubscribing {} ", player);
+        unsubscribed = unsubscribed.prepend(player);
+    }
 
     private void unregisterSubsciptions(int entityId) {
+        //remove player from the entitysubscription
         Set<Player> result = subscribers.get(entityId).get().filter(player -> !unsubscribed.contains(player));
         subscribers = subscribers.put(entityId, result);
     }
@@ -89,19 +97,20 @@ public class EntitySubscriberSystem extends IteratingSystem {
     @Override
     protected void begin(){
         playerUpdate = HashMap.empty();
+        registerSubscriptions();
     }
 
     @Override
     protected void end(){
         unsubscribed = List.empty();
         // new subscribers are registered at the end of the update
-        registerSubscriptions();
+        responders.forEach(responder -> responder.respond(playerUpdate));
     }
 
     @Override
     protected void process(int entityId) {
-        logger.debug("processing for {} ", entityId);
         Subscription subscription = subscriptionComponentMapper.get(entityId);
+      //  logger.debug("entity {} defined {} update {}", entityId, subscribers.get(entityId).isDefined(), subscription.updateFrontend );
         if (subscribers.get(entityId).isDefined() &&  subscription.updateFrontend) {
             unregisterSubsciptions(entityId);
             Set<Integer> entities = HashSet.of(entityId);
@@ -114,7 +123,9 @@ public class EntitySubscriberSystem extends IteratingSystem {
                     playerUpdate = playerUpdate.put(player, entities);
                 }
             });
+            logger.debug("updating {}", subscription);
+            subscription.updateFrontend = false;
         }
-        subscription.updateFrontend = false;
+
     }
 }

@@ -99,6 +99,7 @@ public final class WebSocketServer {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
+            logger.debug("shutting down");
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }

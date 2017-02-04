@@ -1,4 +1,7 @@
 package orient.type.converter;
 
-public class EnumEditor {
+import java.beans.PropertyEditorSupport;
+
+public class EnumEditor extends PropertyEditorSupport{
+
 }

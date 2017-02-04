@@ -9,13 +9,13 @@ import javaslang.Tuple2;
 import javaslang.collection.*;
 import javaslang.control.Option;
 
-public class ResponseBuilder implements Responder {
+public class ResponderImpl implements Responder {
 
     //There are two queues to make sure you do not pass the same event twice in an update.
 
 
     @Inject
-    public ResponseBuilder(World world) {
+    public ResponderImpl(World world) {
         this.world = world;
     }
 

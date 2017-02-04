@@ -6,4 +6,6 @@ import netty.Player;
 public interface Event {
 
     void assignToPlayer(Player player);
+
+    Player getPlayer();
 }
