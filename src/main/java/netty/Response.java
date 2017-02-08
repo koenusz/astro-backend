@@ -2,17 +2,23 @@ package netty;
 
 import com.artemis.Component;
 import javaslang.collection.Map;
-import javaslang.collection.Set;
 
 
 
 public class Response {
 
 
-    public Response(Map<Integer, Set<Component>> entities) {
+    public Response(Map<Integer, Map<String, Component>> entities) {
         this.entities = entities;
     }
 
-    public final Map<Integer, Set<Component>> entities;
+    public final Map<Integer, Map<String, Component>> entities;
 
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "entities=" + entities +
+                '}';
+    }
 }

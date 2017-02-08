@@ -70,12 +70,17 @@ public class ResponderImpl implements Responder {
             Player player = currentEvent.getPlayer();
             Option<Set<Integer>> entities = responseEntities.get(player);
             if (entities.isDefined()) {
-                Map<Integer, Set<Component>> componentMap = HashMap.empty();
+                Map<Integer, Map<String, Component>> componentMap = HashMap.empty();
                 for (int entity : entities.get()) {
 
                     Bag<Component> components = new Bag<>();
                     world.getComponentManager().getComponentsFor(entity, components);
-                    componentMap = componentMap.put(entity, HashSet.ofAll(components));
+
+                    HashMap<String, Component> translated = HashMap.empty();
+                    for (Component component : components) {
+                        translated = translated.put(component.getClass().getSimpleName(), component);
+                    }
+                    componentMap = componentMap.put(entity, translated);
                 }
                 Response response = new Response(componentMap);
                 currentEvent.getPlayer().send(response);

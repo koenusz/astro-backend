@@ -73,11 +73,16 @@ public class GameServer {
     }
 
     public static Injector initInjector(){
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enableDefaultTyping();
+
         return Guice.createInjector(new OrientDBModule(LOCALURL, "admin", "admin")
                 , new ExecutorModule()
                 , new WorldModule()
                 , new EventModule()
-                , new ObjectMapperModule().registerModule(new JavaslangModule())
+                , new ObjectMapperModule()//.withObjectMapper(objectMapper)
+                        .registerModule(new JavaslangModule())
+
         );
     }
 

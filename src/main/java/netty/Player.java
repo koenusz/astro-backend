@@ -29,7 +29,7 @@ public class Player {
 
     public void send(Object object) {
 
-        logger.debug("sending", object);
+        logger.debug("sending {} ", object);
         try {
             send(objectMapper.writer().writeValueAsString(object));
         } catch (JsonProcessingException e) {
