@@ -17,29 +17,23 @@ package netty;
  */
 
 
-        import java.io.InputStream;
-        import java.io.OutputStream;
-        import java.util.ArrayList;
-        import java.util.List;
+import astro.backend.server.GameServer;
+import astro.backend.server.event.frame.Event;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-        import astro.backend.server.GameServer;
-        import astro.backend.server.event.action.ActionEvent;
-        import com.fasterxml.jackson.core.JsonProcessingException;
-        import com.fasterxml.jackson.databind.ObjectMapper;
-        import io.netty.buffer.ByteBuf;
-        import io.netty.buffer.ByteBufInputStream;
-        import io.netty.buffer.ByteBufOutputStream;
-        import io.netty.buffer.Unpooled;
-        import io.netty.channel.ChannelFuture;
-        import io.netty.channel.ChannelFutureListener;
-        import io.netty.channel.ChannelHandlerContext;
-        import io.netty.channel.SimpleChannelInboundHandler;
-        import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-        import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-        import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-        import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
-        import org.slf4j.Logger;
-        import org.slf4j.LoggerFactory;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Echoes uppercase content of text frames.
@@ -77,7 +71,7 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
 
             Player p = new Player(ctx.channel(), mapper);
             gameServer.addPlayer(p);
-            ChannelFuture f = ctx.channel().writeAndFlush(new TextWebSocketFrame("Hello to this server"));
+            //ChannelFuture f = ctx.channel().writeAndFlush(new TextWebSocketFrame("Hello to this server"));
             ChannelFuture closeFuture = ctx.channel().closeFuture();
             closeFuture.addListener((ChannelFutureListener) future -> {
                 gameServer.removePlayer(p);
@@ -99,9 +93,11 @@ public class  WebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocke
             logger.info("{} received {}", ctx.channel(), request);
 
             InputStream byteBufInputStream = new ByteBufInputStream(frame.content());
-            ActionEvent received = mapper.readValue(byteBufInputStream, ActionEvent.class);
+            Event received = mapper.readValue(byteBufInputStream, Event.class);
 
-            gameServer.addActionToQueue(received, ctx.channel());
+            logger.debug(received.toString());
+
+            gameServer.addEventToQueue(received, ctx.channel());
 
             //ctx.channel().writeAndFlush(new TextWebSocketFrame(mapper.writeValueAsString(mock)));
             //ctx.channel().writeAndFlush(new TextWebSocketFrame(request.toUpperCase(Locale.US)));

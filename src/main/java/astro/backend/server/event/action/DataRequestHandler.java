@@ -23,8 +23,10 @@ public class DataRequestHandler implements Handler<DataRequestEvent> {
     @Override
     public void onEvent(DataRequestEvent event) {
         responderImpl.enqueue(event);
-        world.getEntity(event.getEntityId()).getComponent(Subscription.class).updateFrontend = true;
+        for(int enitityId : event.getEntityIds()) {
+            world.getEntity(enitityId).getComponent(Subscription.class).updateFrontend = true;
+        }
         world.getSystem(EntitySubscriberSystem.class)
-                .subscribe(event.getPlayer(), HashSet.of(event.getEntityId()));
+                .subscribe(event.getPlayer(), HashSet.ofAll(event.getEntityIds()));
     }
 }

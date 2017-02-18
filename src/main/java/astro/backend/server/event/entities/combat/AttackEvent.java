@@ -1,6 +1,7 @@
 package astro.backend.server.event.entities.combat;
 
 import astro.backend.server.event.frame.Event;
+import javaslang.collection.List;
 import lombok.Getter;
 import netty.Player;
 
@@ -25,4 +26,5 @@ public class AttackEvent implements Event {
     public Player getPlayer() {
         return null;
     }
+
 }

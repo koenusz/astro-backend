@@ -109,6 +109,7 @@ public class EntitySubscriberSystem extends IteratingSystem {
 
     @Override
     protected void process(int entityId) {
+        //TODO check if we can replace this with a hashing function, also some profiling will be needed to check which is more performant.
         Subscription subscription = subscriptionComponentMapper.get(entityId);
       //  logger.debug("entity {} defined {} update {}", entityId, subscribers.get(entityId).isDefined(), subscription.updateFrontend );
         if (subscribers.get(entityId).isDefined() &&  subscription.updateFrontend) {

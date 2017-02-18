@@ -1,5 +1,6 @@
 package netty;
 
+import astro.backend.server.event.action.DataRequestEvent;
 import astro.backend.server.event.frame.Event;
 import com.artemis.Component;
 import com.artemis.World;
@@ -28,7 +29,7 @@ public class ResponderImpl implements Responder {
     private boolean left = true;
 
     public void enqueue(Event event) {
-        if(left) {
+        if (left) {
             leftEventQueue = leftEventQueue.enqueue(event);
         } else {
             rightEventQueue = rightEventQueue.enqueue(event);
@@ -39,16 +40,16 @@ public class ResponderImpl implements Responder {
         event.forEach(this::enqueue);
     }
 
-    private boolean nonEmpty(){
-        if(left) {
+    private boolean nonEmpty() {
+        if (left) {
             return leftEventQueue.nonEmpty();
         } else {
             return rightEventQueue.nonEmpty();
         }
     }
 
-    private Event dequeue(){
-        if(left) {
+    private Event dequeue() {
+        if (left) {
             Tuple2<Event, Queue<Event>> dequeued = leftEventQueue.dequeue();
             leftEventQueue = dequeued._2;
             return dequeued._1;
@@ -60,7 +61,6 @@ public class ResponderImpl implements Responder {
     }
 
 
-
     @Override
     public void respond(Map<Player, Set<Integer>> responseEntities) {
 
@@ -69,7 +69,10 @@ public class ResponderImpl implements Responder {
             Event currentEvent = dequeue();
             Player player = currentEvent.getPlayer();
             Option<Set<Integer>> entities = responseEntities.get(player);
+
+
             if (entities.isDefined()) {
+
                 Map<Integer, Map<String, Component>> componentMap = HashMap.empty();
                 for (int entity : entities.get()) {
 
@@ -77,8 +80,18 @@ public class ResponderImpl implements Responder {
                     world.getComponentManager().getComponentsFor(entity, components);
 
                     HashMap<String, Component> translated = HashMap.empty();
+
+                    List<String> requestedComponents = List.empty();
+                    if(currentEvent instanceof DataRequestEvent) {
+                        // TODO perhaps create an interface for the getComponents method
+                       requestedComponents = ((DataRequestEvent) currentEvent).getComponents();
+                    }
+
                     for (Component component : components) {
-                        translated = translated.put(component.getClass().getSimpleName(), component);
+
+                        if (requestedComponents.contains(component.getClass().getSimpleName())) {
+                            translated = translated.put(component.getClass().getSimpleName(), component);
+                        }
                     }
                     componentMap = componentMap.put(entity, translated);
                 }
@@ -90,10 +103,5 @@ public class ResponderImpl implements Responder {
         }
         left = !left;
         enqueueAll(notPresent);
-
-
-        // @Todo this can be optimized by filtering the message with only the components needed
-
-
     }
 }

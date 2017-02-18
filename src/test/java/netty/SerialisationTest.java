@@ -10,6 +10,7 @@ import com.google.inject.Injector;
 import javaslang.Tuple2;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
+import javaslang.collection.Map;
 import javaslang.collection.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +41,7 @@ public class SerialisationTest {
         Subscription subscription = new Subscription();
         subscription.updateFrontend = true;
 
-        Set<Component> components = HashSet.of(position, subscription);
+        Map<String, Component> components = HashMap.of("Subscription", subscription);
 
         Response response = new Response(HashMap.of(new Tuple2<>(1, components)));
 

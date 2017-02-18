@@ -29,9 +29,13 @@ public class Player {
 
     public void send(Object object) {
 
-        logger.debug("sending {} ", object);
+
         try {
-            send(objectMapper.writer().writeValueAsString(object));
+            //Todo binarify
+            String response = objectMapper.writer().writeValueAsString(object);
+            logger.debug("sending {} ", response);
+
+            send(response);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

@@ -17,6 +17,7 @@ import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.utils.Bag;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.module.guice.ObjectMapperModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -48,8 +49,6 @@ public class GameServer {
     @Inject
     private ActionQueue actionQueue;
     @Inject
-    private ActionLog actionLog;
-    @Inject
     private Simulator simulator;
     @Inject
     private EventDispatcher dispatcher;
@@ -62,8 +61,6 @@ public class GameServer {
     @Inject
     private ObjectMapper mapper;
     @Inject
-    private ActionFilterChain actionFilterChain;
-    @Inject
     private CelesialBodyBuilder celesialBodyBuilder;
 
     @Inject
@@ -74,13 +71,15 @@ public class GameServer {
 
     public static Injector initInjector(){
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enableDefaultTyping();
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Event.class, new EventDeserializer());
+        objectMapper.registerModule(module);
 
         return Guice.createInjector(new OrientDBModule(LOCALURL, "admin", "admin")
                 , new ExecutorModule()
                 , new WorldModule()
                 , new EventModule()
-                , new ObjectMapperModule()//.withObjectMapper(objectMapper)
+                , new ObjectMapperModule().withObjectMapper(objectMapper)
                         .registerModule(new JavaslangModule())
 
         );
@@ -138,13 +137,11 @@ public class GameServer {
         return result.get();
     }
 
-    public void addActionToQueue(ActionEvent actionEvent, Channel channel) {
+    public void addEventToQueue(Event actionEvent, Channel channel) {
         Player player = findPlayer(channel);
         Objects.nonNull(player);
-        Event filtered = actionFilterChain.filter(actionEvent, player);
-        filtered.assignToPlayer(player);
-
-        actionQueue.enqueue(filtered);
+        actionEvent.assignToPlayer(player);
+        actionQueue.enqueue(actionEvent);
         if(!simulator.isRunning()) {
             simulator.start();
         }
