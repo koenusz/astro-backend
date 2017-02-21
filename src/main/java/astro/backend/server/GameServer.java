@@ -116,6 +116,7 @@ public class GameServer {
 
     private void registerEventHandlers() {
         dispatcher.registerHandler(DataRequestEvent.class, injector.getInstance(DataRequestHandler.class));
+        dispatcher.registerHandler(SimulatorEvent.class, injector.getInstance(Simhandler.class));
     }
 
     public void addPlayer(Player player) {
@@ -142,7 +143,7 @@ public class GameServer {
         Objects.nonNull(player);
         actionEvent.assignToPlayer(player);
         actionQueue.enqueue(actionEvent);
-        if(!simulator.isRunning()) {
+        if(!simulator.isRunning()){
             simulator.start();
         }
     }
