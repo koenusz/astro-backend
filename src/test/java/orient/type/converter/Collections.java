@@ -1,7 +1,7 @@
 package orient.type.converter;
 
-import javaslang.Tuple2;
-import javaslang.collection.*;
+import io.vavr.Tuple2;
+import io.vavr.collection.*;
 
 public class Collections {
 

@@ -2,7 +2,6 @@ package astro.backend.server;
 
 import artemis.EntitySubscriberSystem;
 import artemis.Simulator;
-import artemis.component.Subscription;
 import artemis.component.Surface;
 import artemis.component.Terrain;
 import artemis.component.builder.CelesialBodyBuilder;
@@ -13,9 +12,7 @@ import astro.backend.server.configuration.WorldModule;
 import astro.backend.server.event.action.*;
 import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.EventDispatcher;
-import com.artemis.Entity;
 import com.artemis.World;
-import com.artemis.utils.Bag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.module.guice.ObjectMapperModule;
@@ -23,7 +20,8 @@ import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import io.netty.channel.Channel;
-import javaslang.jackson.datatype.JavaslangModule;
+
+import io.vavr.jackson.datatype.VavrModule;
 import netty.Player;
 import netty.ResponderImpl;
 import netty.WebSocketServer;
@@ -80,7 +78,7 @@ public class GameServer {
                 , new WorldModule()
                 , new EventModule()
                 , new ObjectMapperModule().withObjectMapper(objectMapper)
-                        .registerModule(new JavaslangModule())
+                        .registerModule(new VavrModule())
 
         );
     }

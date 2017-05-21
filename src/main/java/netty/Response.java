@@ -1,7 +1,7 @@
 package netty;
 
 import com.artemis.Component;
-import javaslang.collection.Map;
+import io.vavr.collection.Map;
 
 
 

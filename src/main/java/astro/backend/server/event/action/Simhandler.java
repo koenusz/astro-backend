@@ -1,8 +1,6 @@
 package astro.backend.server.event.action;
 
-
 import artemis.Simulator;
-import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.Handler;
 import com.google.inject.Inject;
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +18,7 @@ public class Simhandler implements Handler<SimulatorEvent> {
 
     @Override
     public void onEvent(SimulatorEvent event) {
+
             if(event.isStart()) {
                 logger.debug("starting speed {}", event.getSpeed());
                 simulator.setSpeed(event.getSpeed());

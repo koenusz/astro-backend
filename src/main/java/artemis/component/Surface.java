@@ -3,7 +3,7 @@ package artemis.component;
 import com.artemis.Component;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javaslang.collection.List;
+import io.vavr.collection.List;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include= JsonTypeInfo.As.PROPERTY, property="@class")
 @JsonTypeName("surface")

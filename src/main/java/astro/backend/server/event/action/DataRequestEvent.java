@@ -3,7 +3,8 @@ package astro.backend.server.event.action;
 import astro.backend.server.event.frame.Event;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import javaslang.collection.List;
+
+import io.vavr.collection.List;
 import lombok.Getter;
 import netty.Player;
 

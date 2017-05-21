@@ -1,7 +1,7 @@
 package astro.backend.server.event.entities.combat;
 
 import astro.backend.server.event.frame.Event;
-import javaslang.collection.List;
+import io.vavr.collection.List;
 import netty.Player;
 
 public class ModifiedAttackMessage implements Event {

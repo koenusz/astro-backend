@@ -6,7 +6,7 @@ import com.artemis.ArchetypeBuilder;
 import com.artemis.ComponentMapper;
 import com.artemis.World;
 import com.google.inject.Inject;
-import javaslang.collection.List;
+import io.vavr.collection.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

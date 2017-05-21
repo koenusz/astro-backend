@@ -6,8 +6,8 @@ import astro.backend.server.event.frame.EventDispatcher;
 import com.artemis.BaseSystem;
 import com.artemis.World;
 import com.google.inject.Inject;
-import javaslang.collection.HashMap;
-import javaslang.collection.List;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -6,9 +6,9 @@ import com.artemis.Component;
 import com.artemis.World;
 import com.artemis.utils.Bag;
 import com.google.inject.Inject;
-import javaslang.Tuple2;
-import javaslang.collection.*;
-import javaslang.control.Option;
+import io.vavr.Tuple2;
+import io.vavr.collection.*;
+import io.vavr.control.Option;
 
 public class ResponderImpl implements Responder {
 

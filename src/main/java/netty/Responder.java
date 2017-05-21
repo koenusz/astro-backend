@@ -1,7 +1,7 @@
 package netty;
 
-import javaslang.collection.Map;
-import javaslang.collection.Set;
+import io.vavr.collection.Map;
+import io.vavr.collection.Set;
 
 public interface Responder {
 

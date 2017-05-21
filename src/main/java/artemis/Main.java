@@ -3,7 +3,7 @@ package artemis;
 import artemis.component.Surface;
 import artemis.component.Terrain;
 import com.artemis.*;
-import javaslang.collection.List;
+import io.vavr.collection.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

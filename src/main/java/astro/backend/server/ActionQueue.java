@@ -1,8 +1,8 @@
 package astro.backend.server;
 
 import astro.backend.server.event.frame.Event;
-import javaslang.Tuple2;
-import javaslang.collection.Queue;
+import io.vavr.Tuple2;
+import io.vavr.collection.Queue;
 
 public class ActionQueue {
 
