@@ -9,6 +9,7 @@ import astro.backend.server.configuration.EventModule;
 import astro.backend.server.configuration.ExecutorModule;
 import astro.backend.server.configuration.OrientDBModule;
 import astro.backend.server.configuration.WorldModule;
+import astro.backend.server.event.SimulatorTickEvent;
 import astro.backend.server.event.action.*;
 import astro.backend.server.event.frame.Event;
 import astro.backend.server.event.frame.EventDispatcher;
@@ -19,6 +20,7 @@ import com.fasterxml.jackson.module.guice.ObjectMapperModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import com.google.inject.Singleton;
 import io.netty.channel.Channel;
 
 import io.vavr.jackson.datatype.VavrModule;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Singleton
 public class GameServer {
 
 
@@ -115,6 +118,7 @@ public class GameServer {
     private void registerEventHandlers() {
         dispatcher.registerHandler(DataRequestEvent.class, injector.getInstance(DataRequestHandler.class));
         dispatcher.registerHandler(SimulatorEvent.class, injector.getInstance(Simhandler.class));
+        dispatcher.registerHandler(SimulatorTickEvent.class, injector.getInstance(SimTickHandler.class));
     }
 
     public void addPlayer(Player player) {
@@ -126,6 +130,10 @@ public class GameServer {
         players.remove(player);
         EntitySubscriberSystem entitySubscriberSystem = world.getSystem(EntitySubscriberSystem.class);
         entitySubscriberSystem.unsubscribe(player);
+    }
+
+    public List<Player> allPlayers(){
+        return players;
     }
 
     private Player findPlayer(Channel channel) {

@@ -36,7 +36,9 @@ public class EventDispatcher implements DynamicRouter {
     @Override
 	public <E extends Event> void dispatch(E content) {
 		Handler handler = handlers.get(Objects.requireNonNull(content).getClass());
-		Objects.requireNonNull(handler);
+		if(handler == null){
+		    throw new NoHandlerRegisteredException("Missing an event handler for " + content.getClass());
+        }
 		handler.onEvent(content);
 	}
 }

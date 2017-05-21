@@ -6,7 +6,7 @@ import com.google.inject.Inject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Simhandler implements Handler<SimulatorEvent> {
+public class Simhandler implements Handler<SimulatorEvent>{
     protected Simulator simulator;
 
     private static final Logger logger = LogManager.getLogger();
@@ -29,4 +29,5 @@ public class Simhandler implements Handler<SimulatorEvent> {
             SimulatorResponse response = new SimulatorResponse(event.isStart(), false);
             event.getPlayer().send(response);
     }
+
 }

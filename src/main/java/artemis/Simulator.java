@@ -2,6 +2,7 @@ package artemis;
 
 
 import astro.backend.server.ActionQueue;
+import astro.backend.server.event.SimulatorTickEvent;
 import astro.backend.server.event.frame.EventDispatcher;
 import com.artemis.BaseSystem;
 import com.artemis.World;
@@ -78,13 +79,14 @@ public class Simulator implements Runnable {
     public void run() {
         try {
             logger.info("running");
-            float lastTime = System.nanoTime();
-            final float ns = 1000000000.0F / 30.0F; //30 times per second
+            float lastTime = 0;
+            final float ns = 1000000000.0F;
             float delta = 0;
             while (running) {
                 if (actionQueue.nonEmpty()) {
                     dispatcher.dispatch(actionQueue.dequeue());
                 }
+                //Todo servertime probably wont do. We need a more sophisticated way to synchonise servers.
                 float now = System.nanoTime();
                 delta = delta + ((now - lastTime) / ns);
                 lastTime = now;
@@ -92,6 +94,7 @@ public class Simulator implements Runnable {
                 {
                     processWorlds(delta);
                     delta--;
+                    dispatcher.dispatch(new SimulatorTickEvent(now));
                 }
             }
         } catch (Throwable e) {
